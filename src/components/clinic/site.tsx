@@ -6,6 +6,7 @@ import {
   Award, Users, Smile, Stethoscope, CalendarCheck, ChevronRight, Quote,
 } from "lucide-react";
 import type { Clinic } from "@/lib/clinic-types";
+import { svcTitle, svcDesc, svcSlug, faqQ, faqA, revName, revText } from "@/lib/clinic-types";
 
 // ---------- Context ----------
 
@@ -307,10 +308,11 @@ export function ServicesGrid({ limit }: { limit?: number }) {
   return (
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {services.map((s, i) => {
-        const Icon = SERVICE_ICONS[s.name] ?? Stethoscope;
+        const title = svcTitle(s);
+        const Icon = SERVICE_ICONS[title] ?? Stethoscope;
         return (
           <motion.div
-            key={s.name}
+            key={svcSlug(s) || title}
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
@@ -323,8 +325,8 @@ export function ServicesGrid({ limit }: { limit?: number }) {
             >
               <Icon className="h-5 w-5" />
             </div>
-            <p className="mt-6 font-display text-2xl tracking-tight">{s.name}</p>
-            <p className="mt-3 text-[14.5px] leading-relaxed text-neutral-600">{s.desc}</p>
+            <p className="mt-6 font-display text-2xl tracking-tight">{title}</p>
+            <p className="mt-3 text-[14.5px] leading-relaxed text-neutral-600">{svcDesc(s)}</p>
             <div className="mt-6 inline-flex items-center gap-1 text-[12.5px] text-neutral-500 transition group-hover:text-neutral-900">
               Learn more <ChevronRight className="h-3.5 w-3.5" />
             </div>
