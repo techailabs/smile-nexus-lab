@@ -67,93 +67,174 @@ export type Database = {
       clinics: {
         Row: {
           about: string | null
+          about_us: string | null
           address: string | null
           ai_score: number | null
+          booking_link: string | null
+          business_hours: Json
+          canonical_url: string | null
           city: string
           claimed: boolean
           clinic_name: string
+          consultation_cta: string | null
           country: string
           created_at: string
           email: string | null
+          emergency_contact: string | null
           faqs: Json
+          font_theme: string | null
+          gallery_images: string[]
+          geo_target_city: string | null
+          geo_target_region: string | null
+          google_business_profile: string | null
+          google_maps_embed: string | null
           hero_image: string | null
           hours: Json
           id: string
           lat: number | null
+          layout_theme: string | null
           lng: number | null
+          logo_url: string | null
+          long_description: string | null
+          meta_description: string | null
+          meta_keywords: string[]
+          meta_title: string | null
+          og_image: string | null
           phone: string | null
           primary_color: string
           rating: number | null
           review_count: number | null
           reviews: Json
+          schema_markup: Json | null
           secondary_color: string
           seo_score: number | null
           services: Json
+          short_description: string | null
           slug: string
+          specialization: string | null
+          state: string | null
           tagline: string | null
+          team: Json
           theme: string
           updated_at: string
           website: string | null
+          whatsapp_number: string | null
+          years_experience: number | null
+          zip_code: string | null
         }
         Insert: {
           about?: string | null
+          about_us?: string | null
           address?: string | null
           ai_score?: number | null
+          booking_link?: string | null
+          business_hours?: Json
+          canonical_url?: string | null
           city: string
           claimed?: boolean
           clinic_name: string
+          consultation_cta?: string | null
           country: string
           created_at?: string
           email?: string | null
+          emergency_contact?: string | null
           faqs?: Json
+          font_theme?: string | null
+          gallery_images?: string[]
+          geo_target_city?: string | null
+          geo_target_region?: string | null
+          google_business_profile?: string | null
+          google_maps_embed?: string | null
           hero_image?: string | null
           hours?: Json
           id?: string
           lat?: number | null
+          layout_theme?: string | null
           lng?: number | null
+          logo_url?: string | null
+          long_description?: string | null
+          meta_description?: string | null
+          meta_keywords?: string[]
+          meta_title?: string | null
+          og_image?: string | null
           phone?: string | null
           primary_color?: string
           rating?: number | null
           review_count?: number | null
           reviews?: Json
+          schema_markup?: Json | null
           secondary_color?: string
           seo_score?: number | null
           services?: Json
+          short_description?: string | null
           slug: string
+          specialization?: string | null
+          state?: string | null
           tagline?: string | null
+          team?: Json
           theme?: string
           updated_at?: string
           website?: string | null
+          whatsapp_number?: string | null
+          years_experience?: number | null
+          zip_code?: string | null
         }
         Update: {
           about?: string | null
+          about_us?: string | null
           address?: string | null
           ai_score?: number | null
+          booking_link?: string | null
+          business_hours?: Json
+          canonical_url?: string | null
           city?: string
           claimed?: boolean
           clinic_name?: string
+          consultation_cta?: string | null
           country?: string
           created_at?: string
           email?: string | null
+          emergency_contact?: string | null
           faqs?: Json
+          font_theme?: string | null
+          gallery_images?: string[]
+          geo_target_city?: string | null
+          geo_target_region?: string | null
+          google_business_profile?: string | null
+          google_maps_embed?: string | null
           hero_image?: string | null
           hours?: Json
           id?: string
           lat?: number | null
+          layout_theme?: string | null
           lng?: number | null
+          logo_url?: string | null
+          long_description?: string | null
+          meta_description?: string | null
+          meta_keywords?: string[]
+          meta_title?: string | null
+          og_image?: string | null
           phone?: string | null
           primary_color?: string
           rating?: number | null
           review_count?: number | null
           reviews?: Json
+          schema_markup?: Json | null
           secondary_color?: string
           seo_score?: number | null
           services?: Json
+          short_description?: string | null
           slug?: string
+          specialization?: string | null
+          state?: string | null
           tagline?: string | null
+          team?: Json
           theme?: string
           updated_at?: string
           website?: string | null
+          whatsapp_number?: string | null
+          years_experience?: number | null
+          zip_code?: string | null
         }
         Relationships: []
       }
@@ -194,6 +275,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      smile_assessments: {
+        Row: {
+          age_range: string | null
+          ai_summary: string | null
+          clinic_id: string | null
+          clinic_slug: string
+          concerns: string[]
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string | null
+          recommended_services: Json
+          smile_goal: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          age_range?: string | null
+          ai_summary?: string | null
+          clinic_id?: string | null
+          clinic_slug: string
+          concerns?: string[]
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          recommended_services?: Json
+          smile_goal?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          age_range?: string | null
+          ai_summary?: string | null
+          clinic_id?: string | null
+          clinic_slug?: string
+          concerns?: string[]
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          recommended_services?: Json
+          smile_goal?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       themes: {
         Row: {

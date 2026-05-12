@@ -2,7 +2,7 @@ import { createFileRoute, notFound, Outlet } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Clinic } from "@/lib/clinic-types";
-import { ClinicProvider, SiteNav, SiteFooter } from "@/components/clinic/site";
+import { ClinicProvider, SiteNav, SiteFooter, WhatsAppFab, ClinicSEO } from "@/components/clinic/site";
 import { CustomizerPanel, type ClinicTheme } from "@/components/clinic/CustomizerPanel";
 import { ClaimModal } from "@/components/clinic/ClaimModal";
 
@@ -105,11 +105,13 @@ function ClinicLayout() {
         }
       >
         <ClinicProvider clinic={clinic}>
+          <ClinicSEO />
           <SiteNav />
           <main>
             <Outlet />
           </main>
           <SiteFooter onClaim={() => setClaimOpen(true)} />
+          <WhatsAppFab />
         </ClinicProvider>
       </div>
 
