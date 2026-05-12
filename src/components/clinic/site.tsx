@@ -413,9 +413,9 @@ export function TestimonialLarge() {
       <div className="mx-auto max-w-5xl px-6 py-32 text-center lg:px-10">
         <Quote className="mx-auto h-8 w-8 text-neutral-300" />
         <p className="mt-8 font-display text-3xl leading-[1.25] tracking-tight md:text-4xl">
-          "{r.text}"
+          "{revText(r)}"
         </p>
-        <p className="mt-8 text-[11px] uppercase tracking-[0.22em] text-neutral-500">— {r.name} · Patient in {clinic.city}</p>
+        <p className="mt-8 text-[11px] uppercase tracking-[0.22em] text-neutral-500">— {revName(r)} · Patient in {clinic.city}</p>
       </div>
     </section>
   );
@@ -425,15 +425,15 @@ export function ReviewsGrid() {
   const clinic = useClinic();
   return (
     <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-      {clinic.reviews.map((r) => (
-        <div key={r.name} className="rounded-[1.5rem] border border-black/[0.06] bg-white p-7">
+      {clinic.reviews.map((r, i) => (
+        <div key={`${revName(r)}-${i}`} className="rounded-[1.5rem] border border-black/[0.06] bg-white p-7">
           <div className="flex" style={{ color: "var(--clinic-primary)" }}>
             {Array.from({ length: r.rating }).map((_, i) => (
               <Star key={i} className="h-4 w-4 fill-current" />
             ))}
           </div>
-          <p className="mt-5 text-[15px] leading-relaxed text-neutral-800">"{r.text}"</p>
-          <p className="mt-6 text-[11px] uppercase tracking-[0.18em] text-neutral-500">— {r.name}</p>
+          <p className="mt-5 text-[15px] leading-relaxed text-neutral-800">"{revText(r)}"</p>
+          <p className="mt-6 text-[11px] uppercase tracking-[0.18em] text-neutral-500">— {revName(r)}{r.source ? ` · ${r.source}` : ""}</p>
         </div>
       ))}
     </div>
@@ -468,13 +468,13 @@ export function FaqList({ limit }: { limit?: number }) {
   const faqs = limit ? clinic.faqs.slice(0, limit) : clinic.faqs;
   return (
     <div className="divide-y divide-black/[0.06] rounded-[1.5rem] border border-black/[0.06] bg-white">
-      {faqs.map((f) => (
-        <details key={f.q} className="group px-7 py-6">
+      {faqs.map((f, i) => (
+        <details key={`${faqQ(f)}-${i}`} className="group px-7 py-6">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-[16.5px] font-medium text-neutral-900">
-            {f.q}
+            {faqQ(f)}
             <span className="text-neutral-400 transition group-open:rotate-45">+</span>
           </summary>
-          <p className="mt-4 max-w-2xl text-[14.5px] leading-relaxed text-neutral-600">{f.a}</p>
+          <p className="mt-4 max-w-2xl text-[14.5px] leading-relaxed text-neutral-600">{faqA(f)}</p>
         </details>
       ))}
     </div>
@@ -519,11 +519,12 @@ export function FinalCta() {
 
 export function HoursCard() {
   const clinic = useClinic();
+  const hours = (clinic.business_hours && Object.keys(clinic.business_hours).length ? clinic.business_hours : clinic.hours) || {};
   return (
     <div className="rounded-[1.5rem] border border-black/[0.06] bg-white p-8">
       <p className="font-display text-2xl tracking-tight">Opening hours</p>
       <ul className="mt-6 space-y-3 text-sm">
-        {Object.entries(clinic.hours).map(([k, v]) => (
+        {Object.entries(hours).map(([k, v]) => (
           <li key={k} className="flex items-center justify-between border-b border-black/[0.05] pb-3 last:border-0">
             <span className="inline-flex items-center gap-2 text-neutral-500"><Clock className="h-3.5 w-3.5" /> {k}</span>
             <span className="text-neutral-900">{v}</span>
@@ -531,5 +532,121 @@ export function HoursCard() {
         ))}
       </ul>
     </div>
+  );
+}
+
+// ---------- WhatsApp floating button (per-clinic) ----------
+
+export function WhatsAppFab() {
+  const clinic = useClinic();
+  const num = (clinic.whatsapp_number || clinic.phone || "").replace(/[^\d]/g, "");
+  if (!num) return null;
+  const msg = encodeURIComponent(`Hi ${clinic.clinic_name}, I'd like to book a consultation.`);
+  return (
+    <a
+      href={`https://wa.me/${num}?text=${msg}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Chat with ${clinic.clinic_name} on WhatsApp`}
+      className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3.5 text-sm font-medium text-white shadow-[0_15px_40px_-10px_rgba(37,211,102,0.6)] transition hover:scale-105"
+    >
+      <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden="true">
+        <path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 0 1 8.413 3.488 11.82 11.82 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.607zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.149-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/>
+      </svg>
+      Chat
+    </a>
+  );
+}
+
+// ---------- SEO + JSON-LD per clinic ----------
+
+export function ClinicSEO() {
+  const clinic = useClinic();
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "Dentist",
+    name: clinic.clinic_name,
+    description: clinic.meta_description || clinic.short_description || clinic.tagline,
+    image: clinic.hero_image,
+    url: clinic.canonical_url || clinic.website,
+    telephone: clinic.phone,
+    email: clinic.email,
+    priceRange: "$$",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: clinic.address,
+      addressLocality: clinic.city,
+      addressRegion: clinic.state || clinic.geo_target_region,
+      postalCode: clinic.zip_code,
+      addressCountry: clinic.country,
+    },
+    geo: clinic.lat && clinic.lng ? { "@type": "GeoCoordinates", latitude: clinic.lat, longitude: clinic.lng } : undefined,
+    aggregateRating: clinic.review_count > 0 ? {
+      "@type": "AggregateRating",
+      ratingValue: clinic.rating,
+      reviewCount: clinic.review_count,
+    } : undefined,
+    makesOffer: clinic.services.map((s) => ({
+      "@type": "Offer",
+      itemOffered: { "@type": "MedicalProcedure", name: svcTitle(s), description: svcDesc(s) },
+    })),
+  };
+  const faqLd = clinic.faqs.length ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: clinic.faqs.map((f) => ({
+      "@type": "Question",
+      name: faqQ(f),
+      acceptedAnswer: { "@type": "Answer", text: faqA(f) },
+    })),
+  } : null;
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />}
+    </>
+  );
+}
+
+// ---------- Premium Map section ----------
+
+export function MapSection() {
+  const clinic = useClinic();
+  if (!clinic.google_maps_embed && !clinic.address) return null;
+  const directions = clinic.lat && clinic.lng
+    ? `https://www.google.com/maps/dir/?api=1&destination=${clinic.lat},${clinic.lng}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinic.address || clinic.clinic_name)}`;
+  return (
+    <section className="border-t border-black/[0.05] bg-[oklch(0.985_0.003_250)]">
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-24 lg:grid-cols-[1fr_1.4fr] lg:px-10">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em]" style={{ color: "var(--clinic-primary)" }}>Visit us</p>
+          <h2 className="mt-4 font-display text-4xl tracking-tight md:text-5xl">Find {clinic.clinic_name}.</h2>
+          {clinic.address && <p className="mt-6 flex items-start gap-2 text-[15px] text-neutral-700"><MapPin className="mt-1 h-4 w-4 shrink-0" /> {clinic.address}</p>}
+          <a
+            href={directions}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white"
+            style={{ background: "var(--clinic-primary)" }}
+          >
+            Get directions <ArrowRight className="h-4 w-4" />
+          </a>
+        </div>
+        <div className="overflow-hidden rounded-[1.75rem] border border-black/[0.06] bg-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.2)]">
+          {clinic.google_maps_embed ? (
+            <iframe
+              src={clinic.google_maps_embed}
+              className="h-[420px] w-full"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title={`Map of ${clinic.clinic_name}`}
+            />
+          ) : (
+            <div className="grid h-[420px] place-items-center text-sm text-neutral-500">Map preview unavailable</div>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
