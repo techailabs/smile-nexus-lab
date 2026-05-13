@@ -7,14 +7,6 @@ import { CustomizerPanel, type ClinicTheme } from "@/components/clinic/Customize
 import { ClaimModal } from "@/components/clinic/ClaimModal";
 
 export const Route = createFileRoute("/clinic/$slug")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `${formatSlug(params.slug)} — Modern dental care` },
-      { name: "description", content: `${formatSlug(params.slug)} — quietly modern dentistry. Book online, view services, gallery and reviews.` },
-      { property: "og:title", content: `${formatSlug(params.slug)} — Modern dental care` },
-      { property: "og:description", content: `Premium dental clinic experience.` },
-    ],
-  }),
   component: ClinicLayout,
   notFoundComponent: () => (
     <div className="grid min-h-screen place-items-center bg-white text-center text-neutral-900">

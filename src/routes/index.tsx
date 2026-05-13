@@ -5,18 +5,6 @@ import { PlatformNav } from "@/components/platform/PlatformNav";
 import { PlatformFooter } from "@/components/platform/PlatformFooter";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "TechAI Labs — The OS for modern dental clinics" },
-      {
-        name: "description",
-        content:
-          "AI-native website generation, SEO infrastructure, and patient engagement for 100,000+ dental clinics. One engine. Infinite clinic experiences.",
-      },
-      { property: "og:title", content: "TechAI Labs — Dental OS" },
-      { property: "og:description", content: "One rendering engine. Infinite clinic experiences." },
-    ],
-  }),
   component: Landing,
 });
 

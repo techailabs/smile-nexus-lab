@@ -2,9 +2,6 @@ import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-r
 import { LayoutDashboard, Building2, Upload, Inbox, Palette, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({
-    meta: [{ title: "Admin · TechAI Labs" }],
-  }),
   component: AdminLayout,
 });
 
