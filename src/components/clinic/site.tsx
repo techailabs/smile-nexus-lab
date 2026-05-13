@@ -46,6 +46,7 @@ const NAV: { to: string; label: string }[] = [
   { to: "about", label: "About" },
   { to: "services", label: "Services" },
   { to: "gallery", label: "Smile Gallery" },
+  { to: "smile-check", label: "Smile Check" },
   { to: "reviews", label: "Reviews" },
   { to: "faq", label: "FAQ" },
   { to: "contact", label: "Contact" },
@@ -304,12 +305,14 @@ const SERVICE_ICONS: Record<string, typeof Smile> = {
 
 export function ServicesGrid({ limit }: { limit?: number }) {
   const clinic = useClinic();
+  const { slug } = useParams({ from: "/clinic/$slug" });
   const services = limit ? clinic.services.slice(0, limit) : clinic.services;
   return (
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {services.map((s, i) => {
         const title = svcTitle(s);
         const Icon = SERVICE_ICONS[title] ?? Stethoscope;
+        const sslug = svcSlug(s);
         return (
           <motion.div
             key={svcSlug(s) || title}
@@ -317,7 +320,11 @@ export function ServicesGrid({ limit }: { limit?: number }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ delay: Math.min(i * 0.04, 0.25), duration: 0.5 }}
-            className="group relative overflow-hidden rounded-[1.5rem] border border-black/[0.06] bg-white p-8 shadow-[0_1px_0_0_rgba(0,0,0,0.02)] transition hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.18)]"
+          >
+          <Link
+            to="/clinic/$slug/services/$serviceSlug"
+            params={{ slug, serviceSlug: sslug }}
+            className="group block h-full rounded-[1.5rem] border border-black/[0.06] bg-white p-8 shadow-[0_1px_0_0_rgba(0,0,0,0.02)] transition hover:-translate-y-1 hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.18)]"
           >
             <div
               className="grid h-12 w-12 place-items-center rounded-2xl text-white"
@@ -330,6 +337,7 @@ export function ServicesGrid({ limit }: { limit?: number }) {
             <div className="mt-6 inline-flex items-center gap-1 text-[12.5px] text-neutral-500 transition group-hover:text-neutral-900">
               Learn more <ChevronRight className="h-3.5 w-3.5" />
             </div>
+          </Link>
           </motion.div>
         );
       })}
