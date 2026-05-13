@@ -45,8 +45,8 @@ const NAV: { to: string; label: string }[] = [
   { to: ".", label: "Home" },
   { to: "about", label: "About" },
   { to: "services", label: "Services" },
-  { to: "gallery", label: "Smile Gallery" },
-  { to: "smile-check", label: "Smile Check" },
+  { to: "gallery", label: "Gallery" },
+  { to: "smile-check", label: "Smile AI" },
   { to: "reviews", label: "Reviews" },
   { to: "faq", label: "FAQ" },
   { to: "contact", label: "Contact" },
@@ -72,7 +72,7 @@ export function SiteNav() {
             </p>
           </div>
         </Link>
-        <nav className="hidden items-center gap-7 text-[13.5px] lg:flex">
+        <nav className="hidden items-center gap-6 whitespace-nowrap text-[13.5px] lg:flex">
           {NAV.map((n) => (
             <Link
               key={n.label}
@@ -88,13 +88,13 @@ export function SiteNav() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <a href={`tel:${clinic.phone}`} className="hidden text-sm text-neutral-600 hover:text-neutral-900 md:inline">
+          <a href={`tel:${clinic.phone}`} className="hidden whitespace-nowrap text-sm text-neutral-600 hover:text-neutral-900 xl:inline">
             {clinic.phone}
           </a>
           <Link
             to="/clinic/$slug/contact"
             params={{ slug }}
-            className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[13px] font-medium text-white shadow-sm transition hover:opacity-90"
+            className="inline-flex items-center gap-2 whitespace-nowrap rounded-full px-5 py-2.5 text-[13px] font-medium text-white shadow-sm transition hover:opacity-90"
             style={{ background: "var(--clinic-primary)" }}
           >
             Book a visit <ArrowRight className="h-3.5 w-3.5" />
