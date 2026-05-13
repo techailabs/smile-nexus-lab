@@ -19,6 +19,7 @@ import { Route as AdminImportRouteImport } from './routes/admin/import'
 import { Route as AdminClinicsRouteImport } from './routes/admin/clinics'
 import { Route as AdminClaimsRouteImport } from './routes/admin/claims'
 import { Route as ClinicSlugIndexRouteImport } from './routes/clinic/$slug/index'
+import { Route as ClinicSlugSmileCheckRouteImport } from './routes/clinic/$slug/smile-check'
 import { Route as ClinicSlugServicesRouteImport } from './routes/clinic/$slug/services'
 import { Route as ClinicSlugReviewsRouteImport } from './routes/clinic/$slug/reviews'
 import { Route as ClinicSlugGalleryRouteImport } from './routes/clinic/$slug/gallery'
@@ -77,6 +78,11 @@ const ClinicSlugIndexRoute = ClinicSlugIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ClinicSlugRoute,
 } as any)
+const ClinicSlugSmileCheckRoute = ClinicSlugSmileCheckRouteImport.update({
+  id: '/smile-check',
+  path: '/smile-check',
+  getParentRoute: () => ClinicSlugRoute,
+} as any)
 const ClinicSlugServicesRoute = ClinicSlugServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/clinic/$slug/gallery': typeof ClinicSlugGalleryRoute
   '/clinic/$slug/reviews': typeof ClinicSlugReviewsRoute
   '/clinic/$slug/services': typeof ClinicSlugServicesRouteWithChildren
+  '/clinic/$slug/smile-check': typeof ClinicSlugSmileCheckRoute
   '/clinic/$slug/': typeof ClinicSlugIndexRoute
   '/clinic/$slug/services/$serviceSlug': typeof ClinicSlugServicesServiceSlugRoute
 }
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/clinic/$slug/gallery': typeof ClinicSlugGalleryRoute
   '/clinic/$slug/reviews': typeof ClinicSlugReviewsRoute
   '/clinic/$slug/services': typeof ClinicSlugServicesRouteWithChildren
+  '/clinic/$slug/smile-check': typeof ClinicSlugSmileCheckRoute
   '/clinic/$slug': typeof ClinicSlugIndexRoute
   '/clinic/$slug/services/$serviceSlug': typeof ClinicSlugServicesServiceSlugRoute
 }
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/clinic/$slug/gallery': typeof ClinicSlugGalleryRoute
   '/clinic/$slug/reviews': typeof ClinicSlugReviewsRoute
   '/clinic/$slug/services': typeof ClinicSlugServicesRouteWithChildren
+  '/clinic/$slug/smile-check': typeof ClinicSlugSmileCheckRoute
   '/clinic/$slug/': typeof ClinicSlugIndexRoute
   '/clinic/$slug/services/$serviceSlug': typeof ClinicSlugServicesServiceSlugRoute
 }
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/clinic/$slug/gallery'
     | '/clinic/$slug/reviews'
     | '/clinic/$slug/services'
+    | '/clinic/$slug/smile-check'
     | '/clinic/$slug/'
     | '/clinic/$slug/services/$serviceSlug'
   fileRoutesByTo: FileRoutesByTo
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/clinic/$slug/gallery'
     | '/clinic/$slug/reviews'
     | '/clinic/$slug/services'
+    | '/clinic/$slug/smile-check'
     | '/clinic/$slug'
     | '/clinic/$slug/services/$serviceSlug'
   id:
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/clinic/$slug/gallery'
     | '/clinic/$slug/reviews'
     | '/clinic/$slug/services'
+    | '/clinic/$slug/smile-check'
     | '/clinic/$slug/'
     | '/clinic/$slug/services/$serviceSlug'
   fileRoutesById: FileRoutesById
@@ -305,6 +317,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/clinic/$slug/'
       preLoaderRoute: typeof ClinicSlugIndexRouteImport
+      parentRoute: typeof ClinicSlugRoute
+    }
+    '/clinic/$slug/smile-check': {
+      id: '/clinic/$slug/smile-check'
+      path: '/smile-check'
+      fullPath: '/clinic/$slug/smile-check'
+      preLoaderRoute: typeof ClinicSlugSmileCheckRouteImport
       parentRoute: typeof ClinicSlugRoute
     }
     '/clinic/$slug/services': {
@@ -395,6 +414,7 @@ interface ClinicSlugRouteChildren {
   ClinicSlugGalleryRoute: typeof ClinicSlugGalleryRoute
   ClinicSlugReviewsRoute: typeof ClinicSlugReviewsRoute
   ClinicSlugServicesRoute: typeof ClinicSlugServicesRouteWithChildren
+  ClinicSlugSmileCheckRoute: typeof ClinicSlugSmileCheckRoute
   ClinicSlugIndexRoute: typeof ClinicSlugIndexRoute
 }
 
@@ -405,6 +425,7 @@ const ClinicSlugRouteChildren: ClinicSlugRouteChildren = {
   ClinicSlugGalleryRoute: ClinicSlugGalleryRoute,
   ClinicSlugReviewsRoute: ClinicSlugReviewsRoute,
   ClinicSlugServicesRoute: ClinicSlugServicesRouteWithChildren,
+  ClinicSlugSmileCheckRoute: ClinicSlugSmileCheckRoute,
   ClinicSlugIndexRoute: ClinicSlugIndexRoute,
 }
 
@@ -421,3 +442,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
