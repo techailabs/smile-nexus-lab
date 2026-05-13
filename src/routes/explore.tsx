@@ -47,18 +47,20 @@ function ExplorePage() {
       <section className="relative overflow-hidden border-b border-border/60">
         <div className="absolute inset-0 bg-aurora opacity-50" />
         <div className="relative mx-auto max-w-7xl px-6 py-20">
-          <p className="text-xs uppercase tracking-widest text-[oklch(0.78_0.18_290)]">Marketplace</p>
-          <h1 className="mt-3 font-display text-5xl tracking-tight">Explore clinic experiences</h1>
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/40 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
+            <span className="h-1.5 w-1.5 rounded-full bg-[oklch(0.78_0.18_290)]" /> Marketplace
+          </span>
+          <h1 className="mt-4 font-display text-5xl tracking-tight">Explore clinic experiences</h1>
           <p className="mt-3 max-w-xl text-muted-foreground">
             Each clinic below is rendered from the same engine. Customise, claim, or use as a starting point.
           </p>
-          <div className="mt-8 flex items-center gap-2 rounded-2xl border border-border/70 bg-background/40 px-4 py-3 backdrop-blur max-w-md">
+          <div className="mt-8 flex max-w-md items-center gap-2 rounded-xl border border-border/70 bg-background/60 px-4 py-3 backdrop-blur focus-within:border-foreground/40">
             <Search className="h-4 w-4 text-muted-foreground" />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search by name or city"
-              className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              className="w-full bg-transparent text-sm normal-case tracking-normal outline-none placeholder:text-muted-foreground"
             />
           </div>
         </div>
