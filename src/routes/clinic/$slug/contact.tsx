@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { PageHeader, HoursCard, useClinic, IMG } from "@/components/clinic/site";
+import { PageHeader, HoursCard, MapSection, useClinic, IMG } from "@/components/clinic/site";
 import { MapPin, Phone, Mail, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/clinic/$slug/contact")({
@@ -71,6 +71,7 @@ function ContactPage() {
           </div>
         </div>
       </section>
+      <MapSection />
     </>
   );
 }
