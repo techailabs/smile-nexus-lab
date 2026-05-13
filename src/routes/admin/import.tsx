@@ -34,16 +34,41 @@ function AdminImport() {
     const country = k("country", "Country") || "—";
     const themeKey = k("theme") || "modern-minimal";
     const preset = THEME_PRESETS.find((t) => t.key === themeKey) ?? THEME_PRESETS[0];
+    const services = k("services")
+      ? k("services").split("|").map((s) => {
+          const title = s.trim();
+          return { title, slug: slugify(title), short_description: "" };
+        })
+      : [];
+    const faqs = k("faqs")
+      ? k("faqs").split("|").map((p) => {
+          const [q, a = ""] = p.split("::");
+          return { question: (q || "").trim(), answer: a.trim() };
+        })
+      : [];
+    const keywords = k("meta_keywords") ? k("meta_keywords").split("|").map((s) => s.trim()).filter(Boolean) : [];
     return {
       clinic_name: name,
       slug: slugify(`${city}-${name}`),
       city,
       country,
+      state: k("state") || null,
+      zip_code: k("zip_code") || null,
+      address: k("address") || null,
       phone: k("phone") || null,
       email: k("email") || null,
       website: k("website") || null,
-      services: k("services") ? k("services").split("|").map((s) => ({ name: s.trim(), desc: "" })) : [],
+      tagline: k("tagline") || null,
+      about: k("about") || null,
+      services,
+      faqs,
       reviews: [],
+      meta_title: k("meta_title") || null,
+      meta_description: k("meta_description") || null,
+      meta_keywords: keywords,
+      whatsapp_number: k("whatsapp_number") || null,
+      booking_link: k("booking_link") || null,
+      google_maps_embed: k("google_maps_embed") || null,
       theme: themeKey,
       primary_color: preset.primary,
       secondary_color: preset.secondary,
@@ -75,8 +100,8 @@ function AdminImport() {
         <p className="text-xs uppercase tracking-widest text-muted-foreground">Bulk import</p>
         <h1 className="mt-2 font-display text-4xl tracking-tight">CSV import</h1>
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-          Columns: <code className="rounded bg-muted px-1.5 py-0.5 text-xs">clinic_name, city, country, phone, email, website, services, reviews, theme</code>.
-          Services can be pipe-separated.
+          Columns: <code className="rounded bg-muted px-1.5 py-0.5 text-xs">clinic_name, city, country, state, zip_code, address, phone, email, website, tagline, about, services, faqs, theme, meta_title, meta_description, meta_keywords, whatsapp_number, booking_link, google_maps_embed</code>.
+          Services and meta_keywords use <code className="rounded bg-muted px-1.5 py-0.5 text-xs">|</code> separators. FAQs use <code className="rounded bg-muted px-1.5 py-0.5 text-xs">question::answer|question::answer</code>.
         </p>
       </div>
 
