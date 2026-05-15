@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PlatformNav } from "@/components/platform/PlatformNav";
 import { PlatformFooter } from "@/components/platform/PlatformFooter";
 import type { Clinic } from "@/lib/clinic-types";
+import { VERTICAL_META, verticalMeta } from "@/lib/clinic-types";
 
 export const Route = createFileRoute("/explore")({
   head: () => ({
@@ -21,6 +22,8 @@ function ExplorePage() {
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
+  const [vertical, setVertical] = useState<string>("all");
+  const [country, setCountry] = useState<"all" | "US" | "UK" | "AU">("all");
 
   useEffect(() => {
     supabase
@@ -36,9 +39,11 @@ function ExplorePage() {
 
   const filtered = clinics.filter(
     (c) =>
-      !q ||
+      (vertical === "all" || (c.vertical ?? "dental") === vertical) &&
+      (country === "all" || (c.country_code ?? "US") === country) &&
+      (!q ||
       c.clinic_name.toLowerCase().includes(q.toLowerCase()) ||
-      c.city.toLowerCase().includes(q.toLowerCase()),
+      c.city.toLowerCase().includes(q.toLowerCase())),
   );
 
   return (
@@ -62,6 +67,25 @@ function ExplorePage() {
               placeholder="Search by name or city"
               className="w-full bg-transparent text-sm normal-case tracking-normal outline-none placeholder:text-muted-foreground"
             />
+          </div>
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            {(["all","US","UK","AU"] as const).map((c) => (
+              <button key={c} onClick={() => setCountry(c)}
+                className={`rounded-full border px-3 py-1 text-xs transition ${country===c ? "border-foreground bg-foreground text-background" : "border-border/70 text-muted-foreground hover:border-foreground/40"}`}>
+                {c === "all" ? "All countries" : c}
+              </button>
+            ))}
+            <span className="mx-1 h-4 w-px bg-border/70" />
+            <button onClick={() => setVertical("all")}
+              className={`rounded-full border px-3 py-1 text-xs transition ${vertical==="all" ? "border-foreground bg-foreground text-background" : "border-border/70 text-muted-foreground hover:border-foreground/40"}`}>
+              All industries
+            </button>
+            {Object.entries(VERTICAL_META).map(([k, m]) => (
+              <button key={k} onClick={() => setVertical(k)}
+                className={`rounded-full border px-3 py-1 text-xs transition ${vertical===k ? "border-foreground bg-foreground text-background" : "border-border/70 text-muted-foreground hover:border-foreground/40"}`}>
+                {m.label}
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -95,13 +119,13 @@ function ExplorePage() {
                     <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between text-white/90">
                       <p className="font-display text-2xl drop-shadow">{c.clinic_name}</p>
                       <span className="rounded-full bg-black/30 px-2 py-0.5 text-[11px] backdrop-blur">
-                        {c.theme}
+                        {verticalMeta(c.vertical).label}
                       </span>
                     </div>
                   </div>
                   <div className="p-5">
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <MapPin className="h-3.5 w-3.5" /> {c.city}, {c.country}
+                      <MapPin className="h-3.5 w-3.5" /> {c.city}, {c.country_code ?? c.country}
                     </div>
                     <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{c.tagline}</p>
                     <div className="mt-4 flex items-center justify-between text-xs">

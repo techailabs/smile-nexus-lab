@@ -45,6 +45,11 @@ export type Clinic = {
   country: string;
   state?: string | null;
   zip_code?: string | null;
+  country_code?: "US" | "UK" | "AU";
+  vertical?: string;
+  template_key?: string;
+  status?: "draft" | "preview" | "claimed" | "live" | "archived";
+  preview_token?: string;
   address: string | null;
   phone: string | null;
   email: string | null;
@@ -89,6 +94,70 @@ export type Clinic = {
   emergency_contact?: string | null;
   consultation_cta?: string | null;
 };
+
+// ---------- Verticals & templates ----------
+
+export type VerticalKey =
+  | "dental" | "orthodontics" | "cosmetic-dentistry" | "pediatric-dentistry"
+  | "dermatology" | "medspa"
+  | "lawyer"
+  | "plumber" | "electrician" | "hvac" | "roofer";
+
+export const VERTICAL_META: Record<string, {
+  label: string;
+  category: "health" | "professional" | "home-services";
+  bookingCta: string;
+  navTagline: string;
+  unit: string; // "patient" | "client" | "customer"
+}> = {
+  dental:               { label: "Dental care",          category: "health",        bookingCta: "Book a consultation", navTagline: "Dental care",        unit: "patient" },
+  orthodontics:         { label: "Orthodontics",         category: "health",        bookingCta: "Book a consultation", navTagline: "Orthodontics",       unit: "patient" },
+  "cosmetic-dentistry": { label: "Cosmetic dentistry",   category: "health",        bookingCta: "Book a consultation", navTagline: "Cosmetic dentistry", unit: "patient" },
+  "pediatric-dentistry":{ label: "Pediatric dentistry",  category: "health",        bookingCta: "Book a visit",        navTagline: "Family dentistry",   unit: "patient" },
+  dermatology:          { label: "Dermatology",          category: "health",        bookingCta: "Book an appointment", navTagline: "Skin & dermatology", unit: "patient" },
+  medspa:               { label: "Med spa",              category: "health",        bookingCta: "Book a treatment",    navTagline: "Aesthetics & wellness", unit: "client" },
+  lawyer:               { label: "Law firm",             category: "professional",  bookingCta: "Request a consultation", navTagline: "Legal counsel",  unit: "client" },
+  plumber:              { label: "Plumbing services",    category: "home-services", bookingCta: "Get a free quote",    navTagline: "24/7 plumbing",      unit: "customer" },
+  electrician:          { label: "Electrical services",  category: "home-services", bookingCta: "Get a free quote",    navTagline: "Licensed electricians", unit: "customer" },
+  hvac:                 { label: "Heating & cooling",    category: "home-services", bookingCta: "Get a free quote",    navTagline: "HVAC specialists",   unit: "customer" },
+  roofer:               { label: "Roofing services",     category: "home-services", bookingCta: "Get a free quote",    navTagline: "Roofing experts",    unit: "customer" },
+};
+
+export function verticalMeta(v?: string) {
+  return VERTICAL_META[v ?? "dental"] ?? VERTICAL_META.dental;
+}
+
+export type TemplatePreset = {
+  key: string;
+  name: string;
+  vertical: string;
+  primary: string;
+  secondary: string;
+  font: "display-modern" | "display-serif" | "display-bold";
+  mood: "minimal" | "luxury" | "warm" | "bold" | "trust";
+};
+
+export const TEMPLATE_REGISTRY: TemplatePreset[] = [
+  // Dental — 5 variants
+  { key: "dental-modern-minimal",  name: "Modern Minimal",      vertical: "dental",               primary: "#0b6cf2", secondary: "#0e1a33", font: "display-modern", mood: "minimal" },
+  { key: "dental-luxury-cosmetic", name: "Luxury Cosmetic",     vertical: "cosmetic-dentistry",   primary: "#c9a25a", secondary: "#0a0a0a", font: "display-serif",  mood: "luxury"  },
+  { key: "dental-family-friendly", name: "Family Friendly",     vertical: "pediatric-dentistry",  primary: "#15b78a", secondary: "#0f3b2e", font: "display-modern", mood: "warm"    },
+  { key: "dental-premium-ortho",   name: "Premium Orthodontics",vertical: "orthodontics",         primary: "#6d28d9", secondary: "#1a1033", font: "display-modern", mood: "minimal" },
+  { key: "dental-calm-wellness",   name: "Calm Wellness",       vertical: "dental",               primary: "#7aa9a0", secondary: "#243b3a", font: "display-serif",  mood: "warm"    },
+  // Medical
+  { key: "medical-clean-clinical", name: "Clean Clinical",      vertical: "dermatology",          primary: "#1e6fd9", secondary: "#0c1f3a", font: "display-modern", mood: "trust"   },
+  { key: "medical-luxury-spa",     name: "Luxury Spa",          vertical: "medspa",               primary: "#b08968", secondary: "#1a1410", font: "display-serif",  mood: "luxury"  },
+  // Legal
+  { key: "legal-classic-trust",    name: "Classic Trust",       vertical: "lawyer",               primary: "#0d2a4a", secondary: "#7a5d2a", font: "display-serif",  mood: "trust"   },
+  { key: "legal-modern-firm",      name: "Modern Firm",         vertical: "lawyer",               primary: "#1a2332", secondary: "#c89b3c", font: "display-modern", mood: "trust"   },
+  // Home services
+  { key: "home-bold-emergency",    name: "Bold 24/7",           vertical: "plumber",              primary: "#dc2626", secondary: "#0a0a0a", font: "display-bold",   mood: "bold"    },
+  { key: "home-rugged-trade",      name: "Rugged Trade",        vertical: "roofer",               primary: "#ea580c", secondary: "#1c1917", font: "display-bold",   mood: "bold"    },
+];
+
+export function templatePreset(key?: string): TemplatePreset {
+  return TEMPLATE_REGISTRY.find((t) => t.key === key) ?? TEMPLATE_REGISTRY[0];
+}
 
 // Normalizers — handle both old and new shapes
 export const svcTitle = (s: ClinicService) => s.title || s.name || "";
