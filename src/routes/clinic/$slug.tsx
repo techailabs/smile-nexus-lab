@@ -2,19 +2,23 @@ import { createFileRoute, notFound, Outlet } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Clinic } from "@/lib/clinic-types";
+import { templatePreset, verticalMeta } from "@/lib/clinic-types";
 import { ClinicProvider, SiteNav, SiteFooter, WhatsAppFab, ClinicSEO } from "@/components/clinic/site";
 import { CustomizerPanel, type ClinicTheme } from "@/components/clinic/CustomizerPanel";
 import { ClaimModal } from "@/components/clinic/ClaimModal";
 
 export const Route = createFileRoute("/clinic/$slug")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `${formatSlug(params.slug)} — Modern dental care` },
-      { name: "description", content: `${formatSlug(params.slug)} — quietly modern dentistry. Book online, view services, gallery and reviews.` },
-      { property: "og:title", content: `${formatSlug(params.slug)} — Modern dental care` },
-      { property: "og:description", content: `Premium dental clinic experience.` },
-    ],
-  }),
+  head: ({ params }) => {
+    const name = formatSlug(params.slug);
+    return {
+      meta: [
+        { title: `${name} — Book online` },
+        { name: "description", content: `${name} — modern, trusted local services. Book online, view services, reviews and contact.` },
+        { property: "og:title", content: name },
+        { property: "og:description", content: `${name} — book online today.` },
+      ],
+    };
+  },
   component: ClinicLayout,
   notFoundComponent: () => (
     <div className="grid min-h-screen place-items-center bg-white text-center text-neutral-900">
@@ -73,11 +77,12 @@ function ClinicLayout() {
         } else {
           const c = data as unknown as Clinic;
           setClinic(c);
+          const preset = templatePreset(c.template_key);
           setTheme((t) => ({
             ...t,
-            primary: c.primary_color,
-            secondary: c.secondary_color,
-            vibe: c.theme,
+            primary: c.primary_color || preset.primary,
+            secondary: c.secondary_color || preset.secondary,
+            vibe: c.template_key || c.theme,
           }));
         }
         setLoading(false);
