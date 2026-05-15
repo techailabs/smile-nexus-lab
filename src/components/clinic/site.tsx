@@ -6,7 +6,7 @@ import {
   Award, Users, Smile, Stethoscope, CalendarCheck, ChevronRight, Quote,
 } from "lucide-react";
 import type { Clinic } from "@/lib/clinic-types";
-import { svcTitle, svcDesc, svcSlug, faqQ, faqA, revName, revText } from "@/lib/clinic-types";
+import { svcTitle, svcDesc, svcSlug, faqQ, faqA, revName, revText, verticalMeta } from "@/lib/clinic-types";
 
 // ---------- Context ----------
 
@@ -55,6 +55,7 @@ const NAV: { to: string; label: string }[] = [
 export function SiteNav() {
   const clinic = useClinic();
   const { slug } = useParams({ from: "/clinic/$slug" });
+  const meta = verticalMeta(clinic.vertical);
   return (
     <header className="sticky top-0 z-30 border-b border-black/[0.06] bg-white/75 backdrop-blur-xl">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6 lg:px-10">
@@ -68,7 +69,7 @@ export function SiteNav() {
           <div className="leading-tight">
             <p className="font-display text-[19px] tracking-tight">{clinic.clinic_name}</p>
             <p className="text-[10.5px] uppercase tracking-[0.18em] text-neutral-500">
-              {clinic.city} · Dental care
+              {clinic.city} · {meta.navTagline}
             </p>
           </div>
         </Link>
