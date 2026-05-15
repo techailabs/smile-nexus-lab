@@ -78,6 +78,7 @@ export type Database = {
           clinic_name: string
           consultation_cta: string | null
           country: string
+          country_code: string
           created_at: string
           email: string | null
           emergency_contact: string | null
@@ -101,6 +102,7 @@ export type Database = {
           meta_title: string | null
           og_image: string | null
           phone: string | null
+          preview_token: string
           primary_color: string
           rating: number | null
           review_count: number | null
@@ -113,10 +115,13 @@ export type Database = {
           slug: string
           specialization: string | null
           state: string | null
+          status: string
           tagline: string | null
           team: Json
+          template_key: string
           theme: string
           updated_at: string
+          vertical: string
           website: string | null
           whatsapp_number: string | null
           years_experience: number | null
@@ -135,6 +140,7 @@ export type Database = {
           clinic_name: string
           consultation_cta?: string | null
           country: string
+          country_code?: string
           created_at?: string
           email?: string | null
           emergency_contact?: string | null
@@ -158,6 +164,7 @@ export type Database = {
           meta_title?: string | null
           og_image?: string | null
           phone?: string | null
+          preview_token?: string
           primary_color?: string
           rating?: number | null
           review_count?: number | null
@@ -170,10 +177,13 @@ export type Database = {
           slug: string
           specialization?: string | null
           state?: string | null
+          status?: string
           tagline?: string | null
           team?: Json
+          template_key?: string
           theme?: string
           updated_at?: string
+          vertical?: string
           website?: string | null
           whatsapp_number?: string | null
           years_experience?: number | null
@@ -192,6 +202,7 @@ export type Database = {
           clinic_name?: string
           consultation_cta?: string | null
           country?: string
+          country_code?: string
           created_at?: string
           email?: string | null
           emergency_contact?: string | null
@@ -215,6 +226,7 @@ export type Database = {
           meta_title?: string | null
           og_image?: string | null
           phone?: string | null
+          preview_token?: string
           primary_color?: string
           rating?: number | null
           review_count?: number | null
@@ -227,10 +239,13 @@ export type Database = {
           slug?: string
           specialization?: string | null
           state?: string | null
+          status?: string
           tagline?: string | null
           team?: Json
+          template_key?: string
           theme?: string
           updated_at?: string
+          vertical?: string
           website?: string | null
           whatsapp_number?: string | null
           years_experience?: number | null
@@ -366,6 +381,39 @@ export type Database = {
           primary_color?: string
           secondary_color?: string
           vibe?: string | null
+        }
+        Relationships: []
+      }
+      verticals: {
+        Row: {
+          category: string
+          created_at: string
+          default_template: string
+          description: string | null
+          icon: string | null
+          id: string
+          key: string
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          default_template: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          key: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          default_template?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          key?: string
+          name?: string
         }
         Relationships: []
       }
