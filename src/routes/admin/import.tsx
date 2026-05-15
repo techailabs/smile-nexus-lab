@@ -3,7 +3,7 @@ import { useState } from "react";
 import Papa from "papaparse";
 import { Upload, FileSpreadsheet, CheckCircle2, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { slugify, THEME_PRESETS } from "@/lib/clinic-types";
+import { slugify, THEME_PRESETS, TEMPLATE_REGISTRY, templatePreset } from "@/lib/clinic-types";
 
 export const Route = createFileRoute("/admin/import")({
   component: AdminImport,
@@ -31,9 +31,17 @@ function AdminImport() {
     const k = (a: string, b?: string) => r[a] ?? (b ? r[b] : "") ?? "";
     const name = k("clinic_name", "Clinic Name");
     const city = k("city", "City");
-    const country = k("country", "Country") || "—";
+    const country = k("country", "Country") || "United States";
+    const rawCountryCode = (k("country_code") || "").toUpperCase();
+    const country_code = ["US", "UK", "AU"].includes(rawCountryCode)
+      ? rawCountryCode
+      : (/united kingdom|^uk$|britain|england/i.test(country) ? "UK"
+        : /australia|^au$/i.test(country) ? "AU" : "US");
+    const vertical = k("vertical") || "dental";
+    const templateKey = k("template_key") || k("template") || "";
+    const tpl = templatePreset(templateKey);
     const themeKey = k("theme") || "modern-minimal";
-    const preset = THEME_PRESETS.find((t) => t.key === themeKey) ?? THEME_PRESETS[0];
+    const themePreset = THEME_PRESETS.find((t) => t.key === themeKey) ?? THEME_PRESETS[0];
     const services = k("services")
       ? k("services").split("|").map((s) => {
           const title = s.trim();
@@ -52,6 +60,10 @@ function AdminImport() {
       slug: slugify(`${city}-${name}`),
       city,
       country,
+      country_code,
+      vertical,
+      template_key: tpl.key,
+      status: k("status") || "preview",
       state: k("state") || null,
       zip_code: k("zip_code") || null,
       address: k("address") || null,
@@ -70,8 +82,8 @@ function AdminImport() {
       booking_link: k("booking_link") || null,
       google_maps_embed: k("google_maps_embed") || null,
       theme: themeKey,
-      primary_color: preset.primary,
-      secondary_color: preset.secondary,
+      primary_color: k("primary_color") || tpl.primary || themePreset.primary,
+      secondary_color: k("secondary_color") || tpl.secondary || themePreset.secondary,
       rating: Number(k("rating")) || 4.8,
       review_count: Number(k("reviews")) || 0,
     };
@@ -100,8 +112,11 @@ function AdminImport() {
         <p className="text-xs uppercase tracking-widest text-muted-foreground">Bulk import</p>
         <h1 className="mt-2 font-display text-4xl tracking-tight">CSV import</h1>
         <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-          Columns: <code className="rounded bg-muted px-1.5 py-0.5 text-xs">clinic_name, city, country, state, zip_code, address, phone, email, website, tagline, about, services, faqs, theme, meta_title, meta_description, meta_keywords, whatsapp_number, booking_link, google_maps_embed</code>.
+          Required: <code className="rounded bg-muted px-1.5 py-0.5 text-xs">clinic_name, city</code>.
+          Recommended: <code className="rounded bg-muted px-1.5 py-0.5 text-xs">vertical, template_key, country_code (US/UK/AU), country, state, zip_code, address, phone, email, website, tagline, about, services, faqs, meta_title, meta_description, meta_keywords, whatsapp_number, booking_link, google_maps_embed, primary_color, secondary_color</code>.
           Services and meta_keywords use <code className="rounded bg-muted px-1.5 py-0.5 text-xs">|</code> separators. FAQs use <code className="rounded bg-muted px-1.5 py-0.5 text-xs">question::answer|question::answer</code>.
+          Verticals: <code className="rounded bg-muted px-1.5 py-0.5 text-xs">dental, orthodontics, cosmetic-dentistry, pediatric-dentistry, dermatology, medspa, lawyer, plumber, electrician, hvac, roofer</code>.
+          Templates: <code className="rounded bg-muted px-1.5 py-0.5 text-xs">{TEMPLATE_REGISTRY.map(t => t.key).join(", ")}</code>.
         </p>
       </div>
 
