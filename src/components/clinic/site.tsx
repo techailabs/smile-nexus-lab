@@ -552,32 +552,63 @@ export function FinalCta() {
   const clinic = useClinic();
   const { slug } = useParams({ from: "/clinic/$slug" });
   return (
-    <section className="relative overflow-hidden border-t border-black/[0.05]">
-      <div className="absolute inset-0 -z-10">
-        <img src={IMG.interior} alt="" className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-neutral-950/65" />
-      </div>
-      <div className="mx-auto max-w-5xl px-6 py-32 text-center lg:px-10">
-        <h2 className="font-display text-4xl tracking-tight text-white md:text-6xl">
-          Your next visit could feel <em className="italic">different</em>.
-        </h2>
-        <p className="mx-auto mt-6 max-w-xl text-[16px] leading-relaxed text-white/80">
-          Book a quiet, considered appointment with {clinic.clinic_name} in {clinic.city}.
-        </p>
-        <div className="mt-10 flex flex-wrap justify-center gap-3">
-          <Link
-            to="/clinic/$slug/contact"
-            params={{ slug }}
-            className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-4 text-sm font-medium text-neutral-900"
-          >
-            Book a visit <ArrowRight className="h-4 w-4" />
-          </Link>
-          <a
-            href={`tel:${clinic.phone}`}
-            className="inline-flex items-center gap-2 rounded-full border border-white/30 px-7 py-4 text-sm text-white"
-          >
-            <Phone className="h-4 w-4" /> {clinic.phone}
-          </a>
+    <section className="relative overflow-hidden border-t border-black/[0.06] bg-white">
+      <div className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
+        <div
+          className="relative overflow-hidden rounded-[2rem] border border-black/[0.06] bg-[oklch(0.985_0.003_250)] p-10 md:p-16"
+        >
+          {/* Brand-tinted accents — light, not heavy */}
+          <div
+            className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-40 blur-3xl"
+            style={{ background: "color-mix(in oklab, var(--clinic-primary) 35%, transparent)" }}
+          />
+          <div
+            className="pointer-events-none absolute -left-20 -bottom-24 h-72 w-72 rounded-full opacity-25 blur-3xl"
+            style={{ background: "color-mix(in oklab, var(--clinic-secondary) 30%, transparent)" }}
+          />
+
+          <div className="relative grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-end">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.22em]" style={{ color: "var(--clinic-primary)" }}>
+                Begin your care
+              </p>
+              <h2 className="mt-4 font-display text-4xl leading-[1.05] tracking-tight text-neutral-950 md:text-5xl">
+                Book a consultation with {clinic.clinic_name}.
+              </h2>
+              <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-neutral-600">
+                Same-week appointments available in {clinic.city}. New patients welcome — no referral required.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  to="/clinic/$slug/contact"
+                  params={{ slug }}
+                  className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-[13.5px] font-medium text-white shadow-[0_18px_40px_-15px_color-mix(in_oklab,var(--clinic-primary)_60%,transparent)] transition hover:opacity-95"
+                  style={{ background: "var(--clinic-primary)" }}
+                >
+                  Book a consultation <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+                {clinic.phone && (
+                  <a
+                    href={`tel:${clinic.phone}`}
+                    className="inline-flex items-center gap-2 rounded-full border border-black/[0.12] bg-white px-6 py-3.5 text-[13.5px] font-medium text-neutral-900 transition hover:border-black/30"
+                  >
+                    <Phone className="h-3.5 w-3.5" /> {clinic.phone}
+                  </a>
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.2)]">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-500">
+                <ShieldCheck className="h-3.5 w-3.5" style={{ color: "var(--clinic-primary)" }} /> What to expect
+              </div>
+              <ul className="mt-5 space-y-3 text-[14px] text-neutral-700">
+                <li className="flex items-start gap-2"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "var(--clinic-primary)" }} /> 30-minute new-patient consultation</li>
+                <li className="flex items-start gap-2"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "var(--clinic-primary)" }} /> Digital scans, no impressions</li>
+                <li className="flex items-start gap-2"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "var(--clinic-primary)" }} /> Transparent treatment plan & pricing</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </section>
