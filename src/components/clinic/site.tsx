@@ -6,7 +6,7 @@ import {
   Award, Users, Smile, Stethoscope, CalendarCheck, ChevronRight, Quote,
 } from "lucide-react";
 import type { Clinic } from "@/lib/clinic-types";
-import { svcTitle, svcDesc, svcSlug, faqQ, faqA, revName, revText, verticalMeta } from "@/lib/clinic-types";
+import { svcTitle, svcDesc, svcSlug, faqQ, faqA, revName, revText, verticalMeta, templatePreset } from "@/lib/clinic-types";
 
 // ---------- Context ----------
 
@@ -19,6 +19,11 @@ export function useClinic() {
   const c = useContext(ClinicCtx);
   if (!c) throw new Error("useClinic must be used within ClinicProvider");
   return c.clinic;
+}
+
+export function useClinicMood() {
+  const c = useClinic();
+  return templatePreset(c.template_key).mood;
 }
 
 // ---------- Imagery (premium Unsplash dental visuals) ----------
