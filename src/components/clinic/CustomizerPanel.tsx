@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Palette, Monitor, Smartphone, Tablet, Sparkles } from "lucide-react";
+import { X, Palette, Monitor, Smartphone, Tablet, SlidersHorizontal } from "lucide-react";
 import { THEME_PRESETS } from "@/lib/clinic-types";
 
 export type ClinicTheme = {
@@ -22,14 +22,20 @@ export function CustomizerPanel({ theme, onChange }: Props) {
 
   return (
     <>
-      {/* Single discreet floating icon */}
-      <button
-        onClick={() => setOpen(true)}
-        aria-label="Customize"
-        className="fixed bottom-6 right-6 z-40 grid h-12 w-12 place-items-center rounded-full border border-black/10 bg-white/90 text-neutral-700 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.25)] backdrop-blur transition hover:scale-105 hover:text-neutral-950"
-      >
-        <Sparkles className="h-4 w-4" />
-      </button>
+      {/* Bottom-center preview controls — professional, framed as a review tool */}
+      <div className="fixed bottom-5 left-1/2 z-40 -translate-x-1/2">
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="Open preview controls"
+          className="group inline-flex items-center gap-2.5 rounded-full border border-black/10 bg-white/95 px-5 py-2.5 text-[13px] font-medium text-neutral-800 shadow-[0_18px_50px_-15px_rgba(0,0,0,0.35)] backdrop-blur-md transition hover:border-black/25 hover:shadow-[0_22px_60px_-15px_rgba(0,0,0,0.45)]"
+        >
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-neutral-900 text-white">
+            <SlidersHorizontal className="h-3 w-3" />
+          </span>
+          Preview controls
+          <span className="hidden text-[11px] uppercase tracking-[0.18em] text-neutral-400 sm:inline">Demo</span>
+        </button>
+      </div>
 
       <AnimatePresence>
         {open && (

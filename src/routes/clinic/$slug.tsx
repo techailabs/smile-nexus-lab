@@ -98,6 +98,24 @@ function ClinicLayout() {
 
   return (
     <div className="min-h-screen bg-neutral-100">
+      {/* Preview framing — this is a private demo prepared for the clinic to review */}
+      <div className="relative z-40 border-b border-black/[0.08] bg-neutral-950 text-white">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-6 py-2 text-[11.5px] lg:px-10">
+          <div className="flex items-center gap-2 text-white/85">
+            <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            <span className="uppercase tracking-[0.2em] text-white/60">Private preview</span>
+            <span className="text-white/30">·</span>
+            <span className="truncate">Prepared for <span className="text-white">{clinic.clinic_name}</span> — claim to deploy on your own domain.</span>
+          </div>
+          <button
+            onClick={() => setClaimOpen(true)}
+            className="rounded-full bg-white px-3 py-1 text-[11px] font-medium text-neutral-900 transition hover:bg-white/90"
+          >
+            Claim this site
+          </button>
+        </div>
+      </div>
+
       <div
         className="light-clinic clinic-root mx-auto min-h-screen bg-white text-neutral-900 transition-all"
         style={
