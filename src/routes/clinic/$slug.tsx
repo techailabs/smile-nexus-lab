@@ -99,7 +99,7 @@ function ClinicLayout() {
   return (
     <div className="min-h-screen bg-neutral-100">
       {/* Preview framing — this is a private demo prepared for the clinic to review */}
-      <div className="sticky top-0 z-40 border-b border-black/[0.08] bg-neutral-950 text-white">
+      <div className="relative z-40 border-b border-black/[0.08] bg-neutral-950 text-white">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-6 py-2 text-[11.5px] lg:px-10">
           <div className="flex items-center gap-2 text-white/85">
             <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
