@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ClinicSlugRouteImport } from './routes/clinic/$slug'
+import { Route as ApiClinicChatRouteImport } from './routes/api/clinic-chat'
 import { Route as AdminThemesRouteImport } from './routes/admin/themes'
 import { Route as AdminImportRouteImport } from './routes/admin/import'
 import { Route as AdminClinicsRouteImport } from './routes/admin/clinics'
@@ -51,6 +52,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const ClinicSlugRoute = ClinicSlugRouteImport.update({
   id: '/clinic/$slug',
   path: '/clinic/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiClinicChatRoute = ApiClinicChatRouteImport.update({
+  id: '/api/clinic-chat',
+  path: '/api/clinic-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminThemesRoute = AdminThemesRouteImport.update({
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/admin/clinics': typeof AdminClinicsRoute
   '/admin/import': typeof AdminImportRoute
   '/admin/themes': typeof AdminThemesRoute
+  '/api/clinic-chat': typeof ApiClinicChatRoute
   '/clinic/$slug': typeof ClinicSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/clinic/$slug/about': typeof ClinicSlugAboutRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/admin/clinics': typeof AdminClinicsRoute
   '/admin/import': typeof AdminImportRoute
   '/admin/themes': typeof AdminThemesRoute
+  '/api/clinic-chat': typeof ApiClinicChatRoute
   '/admin': typeof AdminIndexRoute
   '/clinic/$slug/about': typeof ClinicSlugAboutRoute
   '/clinic/$slug/contact': typeof ClinicSlugContactRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/admin/clinics': typeof AdminClinicsRoute
   '/admin/import': typeof AdminImportRoute
   '/admin/themes': typeof AdminThemesRoute
+  '/api/clinic-chat': typeof ApiClinicChatRoute
   '/clinic/$slug': typeof ClinicSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/clinic/$slug/about': typeof ClinicSlugAboutRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/admin/clinics'
     | '/admin/import'
     | '/admin/themes'
+    | '/api/clinic-chat'
     | '/clinic/$slug'
     | '/admin/'
     | '/clinic/$slug/about'
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/admin/clinics'
     | '/admin/import'
     | '/admin/themes'
+    | '/api/clinic-chat'
     | '/admin'
     | '/clinic/$slug/about'
     | '/clinic/$slug/contact'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/admin/clinics'
     | '/admin/import'
     | '/admin/themes'
+    | '/api/clinic-chat'
     | '/clinic/$slug'
     | '/admin/'
     | '/clinic/$slug/about'
@@ -244,6 +256,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   ExploreRoute: typeof ExploreRoute
+  ApiClinicChatRoute: typeof ApiClinicChatRoute
   ClinicSlugRoute: typeof ClinicSlugRouteWithChildren
 }
 
@@ -282,6 +295,13 @@ declare module '@tanstack/react-router' {
       path: '/clinic/$slug'
       fullPath: '/clinic/$slug'
       preLoaderRoute: typeof ClinicSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/clinic-chat': {
+      id: '/api/clinic-chat'
+      path: '/api/clinic-chat'
+      fullPath: '/api/clinic-chat'
+      preLoaderRoute: typeof ApiClinicChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/themes': {
@@ -437,6 +457,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   ExploreRoute: ExploreRoute,
+  ApiClinicChatRoute: ApiClinicChatRoute,
   ClinicSlugRoute: ClinicSlugRouteWithChildren,
 }
 export const routeTree = rootRouteImport
