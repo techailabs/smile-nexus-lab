@@ -6,6 +6,8 @@ import {
   Award, Users, Smile, Stethoscope, CalendarCheck, ChevronRight, Quote,
 } from "lucide-react";
 import type { Clinic } from "@/lib/clinic-types";
+import { clinicDepth } from "@/lib/clinic-depth";
+import { Button } from "@/components/ui/button";
 import { svcTitle, svcDesc, svcSlug, faqQ, faqA, revName, revText, verticalMeta, templatePreset } from "@/lib/clinic-types";
 
 // ---------- Context ----------
@@ -46,21 +48,21 @@ export const IMG = {
 
 // ---------- Site Nav ----------
 
-const NAV: { to: string; label: string }[] = [
-  { to: ".", label: "Home" },
-  { to: "about", label: "About" },
-  { to: "services", label: "Services" },
-  { to: "gallery", label: "Gallery" },
-  { to: "smile-check", label: "Smile AI" },
-  { to: "reviews", label: "Reviews" },
-  { to: "faq", label: "FAQ" },
-  { to: "contact", label: "Contact" },
-];
+const NAV = [
+  { to: "/clinic/$slug", label: "Home" },
+  { to: "/clinic/$slug/services", label: "Services" },
+  { to: "/clinic/$slug/about", label: "About" },
+  { to: "/clinic/$slug/team", label: "Team", needs: "team" },
+  { to: "/clinic/$slug/reviews", label: "Reviews", needs: "reviews" },
+  { to: "/clinic/$slug/patient-info", label: "Patient Info", needs: "patientInfo" },
+  { to: "/clinic/$slug/contact", label: "Contact" },
+] as const;
 
 export function SiteNav() {
   const clinic = useClinic();
   const { slug } = useParams({ from: "/clinic/$slug" });
   const meta = verticalMeta(clinic.vertical);
+  const nav = NAV.filter(n => !("needs" in n) || clinicDepth(clinic)[n.needs as keyof ReturnType<typeof clinicDepth>]);
   return (
     <header className="sticky top-0 z-30 border-b border-black/[0.06] bg-white/75 backdrop-blur-xl">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6 lg:px-10">
@@ -79,10 +81,10 @@ export function SiteNav() {
           </div>
         </Link>
         <nav className="hidden items-center gap-6 whitespace-nowrap text-[13.5px] lg:flex">
-          {NAV.map((n) => (
+          {nav.map((n) => (
             <Link
               key={n.label}
-              to={n.to === "." ? "/clinic/$slug" : `/clinic/$slug/${n.to}`}
+              to={n.to}
               params={{ slug }}
               activeOptions={{ exact: true }}
               activeProps={{ className: "text-neutral-900" }}
@@ -116,6 +118,7 @@ export function SiteNav() {
 export function SiteFooter({ onClaim }: { onClaim: () => void }) {
   const clinic = useClinic();
   const { slug } = useParams({ from: "/clinic/$slug" });
+  const nav = NAV.filter(n => !("needs" in n) || clinicDepth(clinic)[n.needs as keyof ReturnType<typeof clinicDepth>]);
   return (
     <footer className="border-t border-black/[0.06] bg-[oklch(0.985_0.003_250)]">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-4 lg:px-10">
@@ -130,21 +133,17 @@ export function SiteFooter({ onClaim }: { onClaim: () => void }) {
             <p className="font-display text-2xl tracking-tight">{clinic.clinic_name}</p>
           </div>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-neutral-600">
-            A quietly modern dental practice in {clinic.city} — focused on preventive care, calm experiences,
-            and the kind of details patients remember.
+            {clinic.short_description || clinic.tagline || `Dental care in ${clinic.city}.`}
           </p>
-          <div className="mt-6 flex items-center gap-2 text-sm text-neutral-700">
-            <Star className="h-4 w-4 fill-current" style={{ color: "var(--clinic-primary)" }} />
-            {Number(clinic.rating).toFixed(1)} from {clinic.review_count} patients
-          </div>
+          {clinic.review_count > 0 && <div className="mt-6 flex items-center gap-2 text-sm text-neutral-700"><Star className="h-4 w-4 fill-current" style={{ color: "var(--clinic-primary)" }} />{Number(clinic.rating).toFixed(1)} · {clinic.review_count} reviews</div>}
         </div>
         <div>
           <p className="text-[11px] uppercase tracking-[0.2em] text-neutral-500">Explore</p>
           <ul className="mt-5 space-y-3 text-sm">
-            {NAV.slice(1).map((n) => (
+            {nav.slice(1).map((n) => (
               <li key={n.label}>
                 <Link
-                  to={`/clinic/$slug/${n.to}`}
+                  to={n.to}
                   params={{ slug }}
                   className="text-neutral-700 transition hover:text-neutral-950"
                 >
@@ -244,7 +243,7 @@ export function HomeHero() {
   };
   const copy = moodCopy[mood] ?? moodCopy.minimal;
 
-  const heroImage = mood === "luxury" ? IMG.smile : mood === "warm" ? IMG.family : mood === "trust" ? IMG.patient : IMG.smile;
+  const heroImage = clinic.hero_image;
 
   return (
     <section className="relative isolate overflow-hidden bg-white">
@@ -264,10 +263,10 @@ export function HomeHero() {
             {copy.eyebrow}
           </span>
           <h1 className="mt-6 font-display text-[clamp(2.4rem,5vw,4.6rem)] leading-[1.05] tracking-[-0.02em] text-neutral-950">
-            {copy.headline}
+            {clinic.clinic_name}
           </h1>
           <p className="mt-6 max-w-xl text-[16.5px] leading-relaxed text-neutral-600">
-            {copy.sub}
+            {clinic.short_description || clinic.tagline || `Dental care in ${clinic.city}. Explore the services available at our practice.`}
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -295,9 +294,9 @@ export function HomeHero() {
 
           <div className="mt-12 grid max-w-xl grid-cols-3 gap-8 border-t border-black/[0.07] pt-7">
             {[
-              [`${Number(clinic.rating).toFixed(1)}★`, `${clinic.review_count} verified reviews`],
-              [(clinic.years_experience ? `${clinic.years_experience}+` : "10+"), "years in practice"],
-              ["GDC", "registered clinicians"],
+              ...(clinic.review_count > 0 ? [[`${Number(clinic.rating).toFixed(1)}★`, `${clinic.review_count} reviews`]] : []),
+              ...(clinic.years_experience ? [[`${clinic.years_experience}`, "years of experience"]] : []),
+              ...(clinic.address ? [[clinic.city, "Visit our practice"]] : []),
             ].map(([v, l]) => (
               <div key={l}>
                 <p className="font-display text-2xl tracking-tight text-neutral-950 md:text-[28px]">{v}</p>
@@ -313,24 +312,17 @@ export function HomeHero() {
           transition={{ duration: 0.7, delay: 0.1 }}
           className="relative hidden lg:block"
         >
-          <div className="relative">
+          {heroImage && <div className="relative">
             <div
               className="absolute -inset-3 -z-10 rounded-[2rem]"
               style={{ background: "color-mix(in oklab, var(--clinic-primary) 10%, transparent)" }}
             />
             <img
               src={heroImage}
-              alt={clinic.clinic_name}
+              alt={`${clinic.clinic_name} practice`}
               className="aspect-[4/5] w-full rounded-[1.5rem] object-cover ring-1 ring-black/[0.06]"
             />
-            <div className="absolute -bottom-5 -left-5 max-w-[240px] rounded-2xl border border-black/[0.06] bg-white/95 p-4 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.25)] backdrop-blur">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="h-3.5 w-3.5" style={{ color: "var(--clinic-primary)" }} />
-                <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">Patient-first</p>
-              </div>
-              <p className="mt-1.5 font-display text-base leading-tight">Trusted by {clinic.review_count}+ patients in {clinic.city}.</p>
-            </div>
-          </div>
+          </div>}
         </motion.div>
       </div>
     </section>
@@ -338,24 +330,16 @@ export function HomeHero() {
 }
 
 export function TrustBar() {
+  const clinic = useClinic();
   const items = [
-    { i: Award, t: "Award-winning care" },
-    { i: ShieldCheck, t: "Wellness-first dentistry" },
-    { i: Users, t: "Family & adult friendly" },
-    { i: Sparkles, t: "Modern, calm environment" },
+    ...(clinic.review_count > 0 ? [{ icon: Star, text: `${Number(clinic.rating).toFixed(1)} · ${clinic.review_count} reviews` }] : []),
+    ...(clinic.years_experience ? [{ icon: Award, text: `${clinic.years_experience} years of experience` }] : []),
+    ...(clinic.address ? [{ icon: MapPin, text: clinic.city }] : []),
+    ...(clinic.emergency_available ? [{ icon: Phone, text: "Emergency care available" }] : []),
+    ...(clinic.insurance?.length ? [{ icon: ShieldCheck, text: "Insurance information available" }] : []),
   ];
-  return (
-    <section className="border-y border-black/[0.05] bg-[oklch(0.985_0.003_250)]">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-6 px-6 py-10 md:grid-cols-4 lg:px-10">
-        {items.map(({ i: Icon, t }) => (
-          <div key={t} className="flex items-center gap-3 text-sm text-neutral-700">
-            <Icon className="h-4 w-4" style={{ color: "var(--clinic-primary)" }} />
-            {t}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
+  if (!items.length) return null;
+  return <section className="border-y border-black/[0.05] bg-[oklch(0.985_0.003_250)]"><div className="mx-auto flex max-w-7xl flex-wrap gap-8 px-6 py-7 lg:px-10">{items.map(({ icon: Icon, text }) => <div key={text} className="flex items-center gap-2 text-sm text-neutral-700"><Icon className="h-4 w-4" style={{ color: "var(--clinic-primary)" }} />{text}</div>)}</div></section>;
 }
 
 const SERVICE_ICONS: Record<string, typeof Smile> = {
@@ -405,70 +389,16 @@ export function ServicesGrid({ limit }: { limit?: number }) {
 }
 
 export function WhyChooseUs() {
-  const items = [
-    { i: Heart, t: "Calm by design", d: "Quiet rooms, warm lighting, and a pace that respects your time." },
-    { i: Stethoscope, t: "Preventive-first", d: "We focus on long-term oral wellness — not over-treatment." },
-    { i: Sparkles, t: "Modern technology", d: "Digital imaging and intraoral scanning for precise, gentle care." },
-  ];
-  return (
-    <section className="border-t border-black/[0.05]">
-      <div className="mx-auto max-w-7xl px-6 py-28 lg:px-10">
-        <div className="grid items-end gap-10 md:grid-cols-2">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.22em]" style={{ color: "var(--clinic-primary)" }}>Why patients choose us</p>
-            <h2 className="mt-4 font-display text-4xl tracking-tight md:text-5xl">
-              The kind of dentistry you didn't know you were missing.
-            </h2>
-          </div>
-          <p className="text-[16px] leading-relaxed text-neutral-600">
-            Every detail of our practice — from the way we greet you, to the materials we choose, to the soundtrack
-            in the room — is shaped around a single idea: care that feels considered.
-          </p>
-        </div>
-        <div className="mt-16 grid gap-6 md:grid-cols-3">
-          {items.map(({ i: Icon, t, d }) => (
-            <div key={t} className="rounded-[1.5rem] border border-black/[0.06] bg-white p-8">
-              <Icon className="h-5 w-5" style={{ color: "var(--clinic-primary)" }} />
-              <p className="mt-6 font-display text-2xl">{t}</p>
-              <p className="mt-2 text-[14.5px] leading-relaxed text-neutral-600">{d}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+  const clinic = useClinic();
+  if (!clinic.long_description && !clinic.about_us) return null;
+  return <section className="border-t border-black/[0.05]"><div className="mx-auto grid max-w-7xl gap-10 px-6 py-24 md:grid-cols-2 lg:px-10"><h2 className="font-display text-4xl">Get to know {clinic.clinic_name}.</h2><p className="whitespace-pre-line leading-relaxed text-neutral-700">{clinic.long_description || clinic.about_us}</p></div></section>;
 }
 
 export function GalleryStrip() {
-  const imgs = [IMG.before1, IMG.before2, IMG.before3, IMG.before4, IMG.before5, IMG.before6];
-  return (
-    <section className="relative overflow-hidden border-t border-black/[0.05] bg-[oklch(0.98_0.003_250)]">
-      <div className="mx-auto max-w-7xl px-6 py-28 lg:px-10">
-        <div className="flex items-end justify-between gap-6">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.22em]" style={{ color: "var(--clinic-primary)" }}>Smile gallery</p>
-            <h2 className="mt-4 max-w-xl font-display text-4xl tracking-tight md:text-5xl">
-              Real smiles, gently transformed.
-            </h2>
-          </div>
-        </div>
-        <div className="mt-14 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-          {imgs.map((src, i) => (
-            <motion.img
-              key={src}
-              src={src}
-              alt=""
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.04 }}
-              className={`aspect-[3/4] w-full rounded-2xl object-cover ${i % 5 === 1 ? "mt-8" : ""}`}
-            />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+  const clinic = useClinic();
+  const imgs = clinic.gallery_images || [];
+  if (!imgs.length) return null;
+  return <section className="border-t border-black/[0.05] bg-[oklch(0.98_0.003_250)]"><div className="mx-auto max-w-7xl px-6 py-24 lg:px-10"><h2 className="font-display text-4xl">A look inside {clinic.clinic_name}.</h2><div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3">{imgs.map((src,i) => <img key={src} src={src} alt={`${clinic.clinic_name} gallery image ${i+1}`} loading="lazy" className="aspect-[4/3] w-full object-cover" />)}</div></div></section>;
 }
 
 export function TestimonialLarge() {
@@ -482,7 +412,7 @@ export function TestimonialLarge() {
         <p className="mt-8 font-display text-3xl leading-[1.25] tracking-tight md:text-4xl">
           "{revText(r)}"
         </p>
-        <p className="mt-8 text-[11px] uppercase tracking-[0.22em] text-neutral-500">— {revName(r)} · Patient in {clinic.city}</p>
+        <p className="mt-8 text-[11px] uppercase tracking-[0.22em] text-neutral-500">— {revName(r)}</p>
       </div>
     </section>
   );
@@ -508,26 +438,10 @@ export function ReviewsGrid() {
 }
 
 export function TeamTeaser() {
-  return (
-    <section className="border-t border-black/[0.05]">
-      <div className="mx-auto grid max-w-7xl gap-14 px-6 py-28 lg:grid-cols-2 lg:items-center lg:px-10">
-        <div className="relative">
-          <img src={IMG.team} alt="" className="aspect-[4/5] w-full rounded-[2rem] object-cover shadow-[0_30px_80px_-30px_rgba(0,0,0,0.25)]" />
-        </div>
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.22em]" style={{ color: "var(--clinic-primary)" }}>Meet the team</p>
-          <h2 className="mt-4 font-display text-4xl tracking-tight md:text-5xl">
-            Clinicians who take the time to listen.
-          </h2>
-          <p className="mt-6 text-[16px] leading-relaxed text-neutral-600">
-            Our team blends decades of clinical experience with a softer, slower bedside manner. Every visit
-            begins with a conversation, not a chair — because long-term oral wellness starts with understanding
-            you first.
-          </p>
-        </div>
-      </div>
-    </section>
-  );
+  const clinic = useClinic();
+  const { slug } = useParams({ from: "/clinic/$slug" });
+  if (!clinic.team?.length) return null;
+  return <section className="border-t border-black/[0.05]"><div className="mx-auto max-w-7xl px-6 py-24 lg:px-10"><p className="text-sm" style={{ color: "var(--clinic-primary)" }}>The people behind the practice</p><h2 className="mt-3 font-display text-4xl">Meet the team.</h2><div className="mt-10 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">{clinic.team.slice(0,3).map(person => <div key={person.doctor_name}>{person.image && <img src={person.image} alt={person.doctor_name} loading="lazy" className="aspect-[4/3] w-full object-cover" />}<h3 className="mt-4 font-display text-xl">{person.doctor_name}</h3>{person.role && <p className="text-sm text-neutral-600">{person.role}</p>}</div>)}</div><Link to="/clinic/$slug/team" params={{slug}} className="mt-8 inline-flex items-center gap-2 text-sm underline">View the team <ArrowRight className="size-4" /></Link></div></section>;
 }
 
 export function FaqList({ limit }: { limit?: number }) {
@@ -551,68 +465,7 @@ export function FaqList({ limit }: { limit?: number }) {
 export function FinalCta() {
   const clinic = useClinic();
   const { slug } = useParams({ from: "/clinic/$slug" });
-  return (
-    <section className="relative overflow-hidden border-t border-black/[0.06] bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-24 lg:px-10">
-        <div
-          className="relative overflow-hidden rounded-[2rem] border border-black/[0.06] bg-[oklch(0.985_0.003_250)] p-10 md:p-16"
-        >
-          {/* Brand-tinted accents — light, not heavy */}
-          <div
-            className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-40 blur-3xl"
-            style={{ background: "color-mix(in oklab, var(--clinic-primary) 35%, transparent)" }}
-          />
-          <div
-            className="pointer-events-none absolute -left-20 -bottom-24 h-72 w-72 rounded-full opacity-25 blur-3xl"
-            style={{ background: "color-mix(in oklab, var(--clinic-secondary) 30%, transparent)" }}
-          />
-
-          <div className="relative grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-end">
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.22em]" style={{ color: "var(--clinic-primary)" }}>
-                Begin your care
-              </p>
-              <h2 className="mt-4 font-display text-4xl leading-[1.05] tracking-tight text-neutral-950 md:text-5xl">
-                Book a consultation with {clinic.clinic_name}.
-              </h2>
-              <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-neutral-600">
-                Same-week appointments available in {clinic.city}. New patients welcome — no referral required.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Link
-                  to="/clinic/$slug/contact"
-                  params={{ slug }}
-                  className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-[13.5px] font-medium text-white shadow-[0_18px_40px_-15px_color-mix(in_oklab,var(--clinic-primary)_60%,transparent)] transition hover:opacity-95"
-                  style={{ background: "var(--clinic-primary)" }}
-                >
-                  Book a consultation <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-                {clinic.phone && (
-                  <a
-                    href={`tel:${clinic.phone}`}
-                    className="inline-flex items-center gap-2 rounded-full border border-black/[0.12] bg-white px-6 py-3.5 text-[13.5px] font-medium text-neutral-900 transition hover:border-black/30"
-                  >
-                    <Phone className="h-3.5 w-3.5" /> {clinic.phone}
-                  </a>
-                )}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-black/[0.06] bg-white p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.2)]">
-              <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-500">
-                <ShieldCheck className="h-3.5 w-3.5" style={{ color: "var(--clinic-primary)" }} /> What to expect
-              </div>
-              <ul className="mt-5 space-y-3 text-[14px] text-neutral-700">
-                <li className="flex items-start gap-2"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "var(--clinic-primary)" }} /> 30-minute new-patient consultation</li>
-                <li className="flex items-start gap-2"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "var(--clinic-primary)" }} /> Digital scans, no impressions</li>
-                <li className="flex items-start gap-2"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "var(--clinic-primary)" }} /> Transparent treatment plan & pricing</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+  return <section className="border-t border-black/[0.06] bg-[oklch(0.985_0.003_250)]"><div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 px-6 py-20 md:flex-row md:items-center lg:px-10"><div><p className="text-sm" style={{color:"var(--clinic-primary)"}}>Your next visit</p><h2 className="mt-2 max-w-2xl font-display text-4xl">Connect with {clinic.clinic_name}.</h2><p className="mt-4 text-neutral-600">Tell us what you need and the practice can follow up with you.</p></div><div className="flex shrink-0 flex-wrap gap-3"><Link to="/clinic/$slug/contact" params={{slug}} className="inline-flex items-center gap-2 rounded-md bg-neutral-900 px-6 py-3 text-sm font-medium text-white">Request an appointment <ArrowRight className="size-4" /></Link>{clinic.phone && <a href={`tel:${clinic.phone}`} className="inline-flex items-center gap-2 rounded-md border border-neutral-300 px-6 py-3 text-sm"><Phone className="size-4" />Call the practice</a>}</div></div></section>;
 }
 
 export function HoursCard() {
@@ -637,7 +490,7 @@ export function HoursCard() {
 
 export function WhatsAppFab() {
   const clinic = useClinic();
-  const num = (clinic.whatsapp_number || clinic.phone || "").replace(/[^\d]/g, "");
+  const num = (clinic.whatsapp_number || "").replace(/[^\d]/g, "");
   if (!num) return null;
   const msg = encodeURIComponent(`Hi ${clinic.clinic_name}, I'd like to book a consultation.`);
   return (
@@ -646,7 +499,7 @@ export function WhatsAppFab() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`Chat with ${clinic.clinic_name} on WhatsApp`}
-      className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3.5 text-sm font-medium text-white shadow-[0_15px_40px_-10px_rgba(37,211,102,0.6)] transition hover:scale-105"
+      className="fixed bottom-20 left-4 z-40 md:bottom-6 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3.5 text-sm font-medium text-white shadow-[0_15px_40px_-10px_rgba(37,211,102,0.6)] transition hover:scale-105"
     >
       <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden="true">
         <path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 0 1 8.413 3.488 11.82 11.82 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.607zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.149-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/>
@@ -669,7 +522,6 @@ export function ClinicSEO() {
     url: clinic.canonical_url || clinic.website,
     telephone: clinic.phone,
     email: clinic.email,
-    priceRange: "$$",
     address: {
       "@type": "PostalAddress",
       streetAddress: clinic.address,
@@ -684,10 +536,7 @@ export function ClinicSEO() {
       ratingValue: clinic.rating,
       reviewCount: clinic.review_count,
     } : undefined,
-    makesOffer: clinic.services.map((s) => ({
-      "@type": "Offer",
-      itemOffered: { "@type": "MedicalProcedure", name: svcTitle(s), description: svcDesc(s) },
-    })),
+    hasOfferCatalog: clinic.services.length ? { "@type": "OfferCatalog", name: "Dental services", itemListElement: clinic.services.map((s) => ({ "@type": "OfferCatalog", name: svcTitle(s) })) } : undefined,
   };
   const faqLd = clinic.faqs.length ? {
     "@context": "https://schema.org",
@@ -700,8 +549,8 @@ export function ClinicSEO() {
   } : null;
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
-      {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
+      {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, "\\u003c") }} />}
     </>
   );
 }
