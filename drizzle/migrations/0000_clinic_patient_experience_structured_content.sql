@@ -1,0 +1,13 @@
+ALTER TABLE public.clinics ADD COLUMN IF NOT EXISTS patient_info JSONB NOT NULL DEFAULT '{}'::jsonb, ADD COLUMN IF NOT EXISTS insurance JSONB NOT NULL DEFAULT '[]'::jsonb, ADD COLUMN IF NOT EXISTS financing JSONB NOT NULL DEFAULT '[]'::jsonb, ADD COLUMN IF NOT EXISTS technology JSONB NOT NULL DEFAULT '[]'::jsonb, ADD COLUMN IF NOT EXISTS offers JSONB NOT NULL DEFAULT '[]'::jsonb, ADD COLUMN IF NOT EXISTS locations JSONB NOT NULL DEFAULT '[]'::jsonb, ADD COLUMN IF NOT EXISTS blog JSONB NOT NULL DEFAULT '[]'::jsonb, ADD COLUMN IF NOT EXISTS emergency_available BOOLEAN NOT NULL DEFAULT false;
+CREATE TABLE public.clinic_appointment_requests (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), clinic_id UUID NOT NULL REFERENCES public.clinics(id) ON DELETE CASCADE, patient_name TEXT NOT NULL, email TEXT NOT NULL, phone TEXT NOT NULL, patient_type TEXT, reason TEXT, preferred_date DATE, preferred_time TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), status TEXT NOT NULL DEFAULT 'requested');
+GRANT INSERT ON public.clinic_appointment_requests TO anon, authenticated;
+GRANT ALL ON public.clinic_appointment_requests TO service_role;
+ALTER TABLE public.clinic_appointment_requests ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Submit appointment requests" ON public.clinic_appointment_requests FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE INDEX clinic_appointment_requests_clinic_id_idx ON public.clinic_appointment_requests(clinic_id, created_at DESC);
+CREATE TABLE public.clinic_events (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), clinic_id UUID NOT NULL REFERENCES public.clinics(id) ON DELETE CASCADE, event_name TEXT NOT NULL, page_path TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT now());
+GRANT INSERT ON public.clinic_events TO anon, authenticated;
+GRANT ALL ON public.clinic_events TO service_role;
+ALTER TABLE public.clinic_events ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Record clinic events" ON public.clinic_events FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE INDEX clinic_events_clinic_id_idx ON public.clinic_events(clinic_id, created_at DESC);
