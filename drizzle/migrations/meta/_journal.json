@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1790634556767,
+      "tag": "0000_clinic_patient_experience_structured_content",
+      "breakpoints": true
+    }
+  ]
+}

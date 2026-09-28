@@ -64,12 +64,95 @@ export type Database = {
           },
         ]
       }
+      clinic_appointment_requests: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          email: string
+          id: string
+          patient_name: string
+          patient_type: string | null
+          phone: string
+          preferred_date: string | null
+          preferred_time: string | null
+          reason: string | null
+          status: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          email: string
+          id?: string
+          patient_name: string
+          patient_type?: string | null
+          phone: string
+          preferred_date?: string | null
+          preferred_time?: string | null
+          reason?: string | null
+          status?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          patient_name?: string
+          patient_type?: string | null
+          phone?: string
+          preferred_date?: string | null
+          preferred_time?: string | null
+          reason?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_appointment_requests_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinic_events: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          event_name: string
+          id: string
+          page_path: string | null
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          event_name: string
+          id?: string
+          page_path?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          event_name?: string
+          id?: string
+          page_path?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_events_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinics: {
         Row: {
           about: string | null
           about_us: string | null
           address: string | null
           ai_score: number | null
+          blog: Json
           booking_link: string | null
           business_hours: Json
           canonical_url: string | null
@@ -81,8 +164,10 @@ export type Database = {
           country_code: string
           created_at: string
           email: string | null
+          emergency_available: boolean
           emergency_contact: string | null
           faqs: Json
+          financing: Json
           font_theme: string | null
           gallery_images: string[]
           geo_target_city: string | null
@@ -92,15 +177,19 @@ export type Database = {
           hero_image: string | null
           hours: Json
           id: string
+          insurance: Json
           lat: number | null
           layout_theme: string | null
           lng: number | null
+          locations: Json
           logo_url: string | null
           long_description: string | null
           meta_description: string | null
           meta_keywords: string[]
           meta_title: string | null
+          offers: Json
           og_image: string | null
+          patient_info: Json
           phone: string | null
           preview_token: string
           primary_color: string
@@ -118,6 +207,7 @@ export type Database = {
           status: string
           tagline: string | null
           team: Json
+          technology: Json
           template_key: string
           theme: string
           updated_at: string
@@ -132,6 +222,7 @@ export type Database = {
           about_us?: string | null
           address?: string | null
           ai_score?: number | null
+          blog?: Json
           booking_link?: string | null
           business_hours?: Json
           canonical_url?: string | null
@@ -143,8 +234,10 @@ export type Database = {
           country_code?: string
           created_at?: string
           email?: string | null
+          emergency_available?: boolean
           emergency_contact?: string | null
           faqs?: Json
+          financing?: Json
           font_theme?: string | null
           gallery_images?: string[]
           geo_target_city?: string | null
@@ -154,15 +247,19 @@ export type Database = {
           hero_image?: string | null
           hours?: Json
           id?: string
+          insurance?: Json
           lat?: number | null
           layout_theme?: string | null
           lng?: number | null
+          locations?: Json
           logo_url?: string | null
           long_description?: string | null
           meta_description?: string | null
           meta_keywords?: string[]
           meta_title?: string | null
+          offers?: Json
           og_image?: string | null
+          patient_info?: Json
           phone?: string | null
           preview_token?: string
           primary_color?: string
@@ -180,6 +277,7 @@ export type Database = {
           status?: string
           tagline?: string | null
           team?: Json
+          technology?: Json
           template_key?: string
           theme?: string
           updated_at?: string
@@ -194,6 +292,7 @@ export type Database = {
           about_us?: string | null
           address?: string | null
           ai_score?: number | null
+          blog?: Json
           booking_link?: string | null
           business_hours?: Json
           canonical_url?: string | null
@@ -205,8 +304,10 @@ export type Database = {
           country_code?: string
           created_at?: string
           email?: string | null
+          emergency_available?: boolean
           emergency_contact?: string | null
           faqs?: Json
+          financing?: Json
           font_theme?: string | null
           gallery_images?: string[]
           geo_target_city?: string | null
@@ -216,15 +317,19 @@ export type Database = {
           hero_image?: string | null
           hours?: Json
           id?: string
+          insurance?: Json
           lat?: number | null
           layout_theme?: string | null
           lng?: number | null
+          locations?: Json
           logo_url?: string | null
           long_description?: string | null
           meta_description?: string | null
           meta_keywords?: string[]
           meta_title?: string | null
+          offers?: Json
           og_image?: string | null
+          patient_info?: Json
           phone?: string | null
           preview_token?: string
           primary_color?: string
@@ -242,6 +347,7 @@ export type Database = {
           status?: string
           tagline?: string | null
           team?: Json
+          technology?: Json
           template_key?: string
           theme?: string
           updated_at?: string
@@ -441,12 +547,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -470,11 +576,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -495,11 +601,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -520,11 +626,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -537,11 +643,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
