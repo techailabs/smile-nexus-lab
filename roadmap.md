@@ -1,0 +1,5 @@
+- [ ] Make clinic websites data-driven and remove unsupported claims and stock results.
+- [ ] Add conditional depth pages, patient information and appointment request flow.
+- [ ] Add isolated AI assistant and treatment finder.
+- [ ] Improve metadata, structured data, analytics and admin controls.
+- [ ] Test Sydney and other clinic pages on desktop and mobile.

@@ -1,0 +1,4 @@
+- Clinic pages retain one dynamic /clinic/$slug route hierarchy and load records by indexed slug; this avoids per-clinic deployments and duplicated page code.
+- Optional clinic content is represented by additive structured fields on clinics and a shared availability helper; missing data never creates invented pages or claims.
+- Clinic chat uses a server streaming endpoint with public clinic facts fetched by slug on every request and no persisted conversation; this isolates tenants and avoids sending patient intake to AI.
+- Appointment requests and anonymous interaction events are append-only clinic-scoped rows with no public read policy; this prevents visitor access to submitted details.
