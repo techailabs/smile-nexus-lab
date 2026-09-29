@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Sparkles, CheckCircle2, Loader2 } from "lucide-react";
-import { PageHeader, useClinic, IMG } from "@/components/clinic/site";
+import { PageHeader, useClinic } from "@/components/clinic/site";
 import { svcTitle } from "@/lib/clinic-types";
 import { submitSmileCheck } from "@/lib/smile-check.functions";
 
@@ -80,7 +80,7 @@ function SmileCheckPage() {
           eyebrow="Your smile assessment"
           title="A personalized plan, just for you."
           intro={`Thank you ${form.full_name.split(" ")[0]} — here's what we'd suggest based on what you told us.`}
-          image={IMG.smile}
+          
         />
         <section className="border-t border-black/[0.05]">
           <div className="mx-auto max-w-3xl px-6 py-20 lg:px-10">
@@ -118,7 +118,7 @@ function SmileCheckPage() {
         eyebrow="Free AI smile assessment"
         title="Tell us about your smile."
         intro={`Answer a few quick questions and our team — supported by AI — will craft a personalized recommendation tailored to ${clinic.clinic_name}'s treatments.`}
-        image={IMG.smile}
+        
       />
       <section className="border-t border-black/[0.05]">
         <div className="mx-auto max-w-2xl px-6 py-20 lg:px-10">

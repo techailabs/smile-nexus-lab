@@ -80,11 +80,11 @@ export function SiteNav() {
             </p>
           </div>
         </Link>
-        <nav className="hidden items-center gap-6 whitespace-nowrap text-[13.5px] lg:flex">
+        <nav className="hidden items-center gap-4 whitespace-nowrap text-[13px] xl:flex">
           {nav.map((n) => (
             <Link
               key={n.label}
-              to={n.to}
+              to={n.to as "/clinic/$slug"}
               params={{ slug }}
               activeOptions={{ exact: true }}
               activeProps={{ className: "text-neutral-900" }}
@@ -96,9 +96,9 @@ export function SiteNav() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <a href={`tel:${clinic.phone}`} className="hidden whitespace-nowrap text-sm text-neutral-600 hover:text-neutral-900 xl:inline">
+          {clinic.phone && <a href={`tel:${clinic.phone}`} className="hidden whitespace-nowrap text-sm text-neutral-600 hover:text-neutral-900 xl:inline">
             {clinic.phone}
-          </a>
+          </a>}
           <Link
             to="/clinic/$slug/contact"
             params={{ slug }}
@@ -143,7 +143,7 @@ export function SiteFooter({ onClaim }: { onClaim: () => void }) {
             {nav.slice(1).map((n) => (
               <li key={n.label}>
                 <Link
-                  to={n.to}
+                  to={n.to as "/clinic/$slug"}
                   params={{ slug }}
                   className="text-neutral-700 transition hover:text-neutral-950"
                 >
@@ -168,12 +168,7 @@ export function SiteFooter({ onClaim }: { onClaim: () => void }) {
           <div className="flex items-center gap-4">
             <span>Privacy</span>
             <span>Accessibility</span>
-            <button
-              onClick={onClaim}
-              className="text-neutral-400 transition hover:text-neutral-700"
-            >
-              Manage this site
-            </button>
+            <Button variant="ghost" size="sm" onClick={onClaim}>Manage this site</Button>
           </div>
         </div>
       </div>
@@ -206,42 +201,8 @@ export function PageHeader({ eyebrow, title, intro, image }: { eyebrow: string; 
 export function HomeHero() {
   const clinic = useClinic();
   const { slug } = useParams({ from: "/clinic/$slug" });
-  const mood = useClinicMood();
 
-  // Mood-aware copy & framing so each clinic feels distinct
-  const moodCopy: Record<string, { eyebrow: string; headline: React.ReactNode; sub: string; cta: string }> = {
-    minimal: {
-      eyebrow: `Dentistry in ${clinic.city}`,
-      headline: <>Modern dentistry, <span className="italic" style={{ color: "var(--clinic-primary)" }}>quietly delivered</span>.</>,
-      sub: `${clinic.clinic_name} pairs evidence-based care with a calm, design-led patient experience.`,
-      cta: "Book a consultation",
-    },
-    luxury: {
-      eyebrow: `Cosmetic dentistry · ${clinic.city}`,
-      headline: <>A signature smile, <span className="italic" style={{ color: "var(--clinic-primary)" }}>crafted for you</span>.</>,
-      sub: `Bespoke veneers, alignment and whitening — designed and delivered by ${clinic.clinic_name}.`,
-      cta: "Begin your consultation",
-    },
-    warm: {
-      eyebrow: `Family dentistry · ${clinic.city}`,
-      headline: <>Trusted dental care, <span className="italic" style={{ color: "var(--clinic-primary)" }}>for every age</span>.</>,
-      sub: `${clinic.clinic_name} is the welcoming dental home families in ${clinic.city} have relied on for years.`,
-      cta: "Schedule a visit",
-    },
-    trust: {
-      eyebrow: `Established dental practice · ${clinic.city}`,
-      headline: <>Considered care from <span className="italic" style={{ color: "var(--clinic-primary)" }}>experienced clinicians</span>.</>,
-      sub: `${clinic.clinic_name} delivers preventive, restorative and cosmetic dentistry to the highest professional standard.`,
-      cta: "Request an appointment",
-    },
-    bold: {
-      eyebrow: `${clinic.city} dental specialists`,
-      headline: <>Confident smiles. <span className="italic" style={{ color: "var(--clinic-primary)" }}>Lasting results.</span></>,
-      sub: `Advanced dental treatments at ${clinic.clinic_name} — designed to deliver outcomes you can see and feel.`,
-      cta: "Book a consultation",
-    },
-  };
-  const copy = moodCopy[mood] ?? moodCopy.minimal;
+  const copy = { eyebrow: `Dental practice · ${clinic.city}`, cta: 'Request a visit' };
 
   const heroImage = clinic.hero_image;
 
@@ -256,7 +217,7 @@ export function HomeHero() {
       />
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[1px] bg-gradient-to-r from-transparent via-black/10 to-transparent" />
 
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 md:py-28 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:px-10 lg:py-32">
+      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:py-20 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:px-10">
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
           <span className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-neutral-600">
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--clinic-primary)" }} />
@@ -310,7 +271,7 @@ export function HomeHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="relative hidden lg:block"
+          className="relative lg:block"
         >
           {heroImage && <div className="relative">
             <div
