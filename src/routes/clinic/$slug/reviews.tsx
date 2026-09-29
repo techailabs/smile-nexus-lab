@@ -1,8 +1,10 @@
+import { clinicPageHead } from "@/lib/clinic-depth";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, ReviewsGrid, FinalCta, useClinic } from "@/components/clinic/site";
 import { Star } from "lucide-react";
 
 export const Route = createFileRoute("/clinic/$slug/reviews")({
+  head: ({params}) => clinicPageHead(params.slug, "Reviews", `Patient reviews at ${params.slug.replaceAll("-"," ")}.`),
   component: ReviewsPage,
 });
 

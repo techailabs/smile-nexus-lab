@@ -1,3 +1,4 @@
+import { clinicPageHead } from "@/lib/clinic-depth";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   HomeHero, TrustBar, ServicesGrid, WhyChooseUs, GalleryStrip,
@@ -6,6 +7,7 @@ import {
 import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/clinic/$slug/")({
+  head: ({params}) => clinicPageHead(params.slug, "Home", `Dental care and treatments at ${params.slug.replaceAll("-"," ")}.`),
   component: ClinicHome,
 });
 

@@ -1,9 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowRight, Check, ChevronLeft } from "lucide-react";
+import { ArrowRight, ChevronLeft } from "lucide-react";
 import { useClinic, FinalCta } from "@/components/clinic/site";
+import { clinicPageHead } from "@/lib/clinic-depth";
 import { svcTitle, svcDesc, svcSlug } from "@/lib/clinic-types";
 
 export const Route = createFileRoute("/clinic/$slug/services/$serviceSlug")({
+  head: ({params}) => clinicPageHead(params.slug,params.serviceSlug.replaceAll("-"," "),`Learn about ${params.serviceSlug.replaceAll("-"," ")} in ${params.slug.replaceAll("-"," ")}.`),
   component: ServiceDetail,
   notFoundComponent: () => (
     <div className="grid min-h-[60vh] place-items-center text-center">

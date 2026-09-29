@@ -1,3 +1,4 @@
+import { clinicPageHead } from "@/lib/clinic-depth";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -7,6 +8,7 @@ import { svcTitle } from "@/lib/clinic-types";
 import { submitSmileCheck } from "@/lib/smile-check.functions";
 
 export const Route = createFileRoute("/clinic/$slug/smile-check")({
+  head: ({params}) => clinicPageHead(params.slug, "Smile enquiry", `Share smile goals with the practice at ${params.slug.replaceAll("-"," ")}.`),
   component: SmileCheckPage,
 });
 

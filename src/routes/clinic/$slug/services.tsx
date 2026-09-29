@@ -1,7 +1,9 @@
+import { clinicPageHead } from "@/lib/clinic-depth";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, ServicesGrid, FinalCta, useClinic } from "@/components/clinic/site";
 
 export const Route = createFileRoute("/clinic/$slug/services")({
+  head: ({params}) => clinicPageHead(params.slug, "Services", `Dental treatments at ${params.slug.replaceAll("-"," ")}.`),
   component: ServicesPage,
 });
 

@@ -1,7 +1,9 @@
+import { clinicPageHead } from "@/lib/clinic-depth";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader, FaqList, FinalCta } from "@/components/clinic/site";
 
 export const Route = createFileRoute("/clinic/$slug/faq")({
+  head: ({params}) => clinicPageHead(params.slug, "Frequently asked questions", `Questions about dental care at ${params.slug.replaceAll("-"," ")}.`),
   component: FaqPage,
 });
 

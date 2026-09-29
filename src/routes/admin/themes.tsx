@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { THEME_PRESETS } from "@/lib/clinic-types";
 
 export const Route = createFileRoute("/admin/themes")({
+  head: () => ({ meta: [{title:"Themes | Smile Nexus Lab"},{name:"description",content:"Review dental clinic website themes."},{property:"og:title",content:"Themes | Smile Nexus Lab"},{property:"og:description",content:"Review dental clinic website themes."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary"}] }),
   component: AdminThemes,
 });
 

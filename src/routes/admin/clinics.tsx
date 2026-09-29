@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { slugify, THEME_PRESETS } from "@/lib/clinic-types";
 
 export const Route = createFileRoute("/admin/clinics")({
+  head: () => ({ meta: [{title:"Clinics | Smile Nexus Lab"},{name:"description",content:"Manage dental clinic websites."},{property:"og:title",content:"Clinics | Smile Nexus Lab"},{property:"og:description",content:"Manage dental clinic websites."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary"}] }),
   component: AdminClinics,
 });
 
@@ -27,7 +28,7 @@ function AdminClinics() {
       .select("*")
       .order("created_at", { ascending: false })
       .range(page*50,(page+1)*50-1);
-    setRows((data as Row[]) ?? []);
+    setRows((data as unknown as Row[]) ?? []);
     setLoading(false);
   };
 
