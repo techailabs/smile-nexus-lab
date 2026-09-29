@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowRight, Check, ChevronLeft } from "lucide-react";
-import { useClinic, FinalCta, IMG } from "@/components/clinic/site";
+import { useClinic, FinalCta } from "@/components/clinic/site";
 import { svcTitle, svcDesc, svcSlug } from "@/lib/clinic-types";
 
 export const Route = createFileRoute("/clinic/$slug/services/$serviceSlug")({
@@ -24,7 +24,7 @@ function ServiceDetail() {
   const title = svcTitle(service);
   const desc = svcDesc(service);
   const long = service.full_description || desc;
-  const image = service.featured_image || IMG.chair;
+  const image = service.featured_image;
 
   const others = clinic.services.filter((s) => svcSlug(s) !== serviceSlug).slice(0, 3);
 
@@ -54,37 +54,21 @@ function ServiceDetail() {
                 className="inline-flex items-center gap-2 rounded-full px-7 py-4 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
                 style={{ background: "var(--clinic-primary)" }}
               >
-                {clinic.consultation_cta || "Book this treatment"} <ArrowRight className="h-4 w-4" />
+                {clinic.consultation_cta || "Request a consultation"} <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 to="/clinic/$slug/smile-check"
                 params={{ slug }}
                 className="inline-flex items-center gap-2 rounded-full border border-black/10 px-7 py-4 text-sm font-medium transition hover:border-black/30"
               >
-                Free smile assessment
+                Explore smile assessment
               </Link>
             </div>
           </div>
-          <div className="relative">
+          {image && <div className="relative">
             <div className="absolute -inset-6 -z-10 rounded-[2rem]" style={{ background: "color-mix(in oklab, var(--clinic-primary) 10%, transparent)" }} />
             <img src={image} alt={title} className="aspect-[4/5] w-full rounded-[1.75rem] object-cover shadow-[0_30px_80px_-30px_rgba(0,0,0,0.25)]" />
-          </div>
-        </div>
-      </section>
-
-      <section className="border-t border-black/[0.05] bg-[oklch(0.985_0.003_250)]">
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 md:grid-cols-3 lg:px-10">
-          {[
-            { t: "What to expect", d: `A relaxed consultation, full clinical assessment, and a clear plan for your ${title.toLowerCase()} journey.` },
-            { t: "Why us", d: `${clinic.clinic_name} blends modern technology with unhurried, considered care.` },
-            { t: "Aftercare", d: "Detailed aftercare guidance and follow-up appointments included as standard." },
-          ].map((b) => (
-            <div key={b.t} className="rounded-[1.5rem] border border-black/[0.06] bg-white p-8">
-              <Check className="h-5 w-5" style={{ color: "var(--clinic-primary)" }} />
-              <p className="mt-5 font-display text-2xl tracking-tight">{b.t}</p>
-              <p className="mt-3 text-[14.5px] leading-relaxed text-neutral-600">{b.d}</p>
-            </div>
-          ))}
+          </div>}
         </div>
       </section>
 
