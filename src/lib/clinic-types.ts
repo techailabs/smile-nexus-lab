@@ -93,6 +93,14 @@ export type Clinic = {
   whatsapp_number?: string | null;
   emergency_contact?: string | null;
   consultation_cta?: string | null;
+  patient_info?: Record<string, string>;
+  insurance?: string[];
+  financing?: string[];
+  technology?: Array<{ name: string; description?: string; image?: string }>;
+  offers?: Array<{ title: string; description?: string }>;
+  locations?: Array<{ name: string; address: string; city?: string; phone?: string }>;
+  blog?: Array<{ title: string; slug: string; content: string; author?: string; date?: string; featured_image?: string }>;
+  emergency_available?: boolean;
 };
 
 // ---------- Verticals & templates ----------
