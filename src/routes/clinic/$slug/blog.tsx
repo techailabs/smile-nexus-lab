@@ -1,0 +1,5 @@
+import { createFileRoute, notFound, Link } from '@tanstack/react-router';
+import { PageHeader, useClinic } from '@/components/clinic/site';
+import { clinicPageHead } from '@/lib/clinic-depth';
+export const Route=createFileRoute('/clinic/$slug/blog')({head:({params})=>clinicPageHead(params.slug,'Journal',`Dental education from ${params.slug.replaceAll('-',' ')}.`),component:Blog});
+function Blog(){const c=useClinic();if(!c.blog?.length)throw notFound();return <><PageHeader eyebrow="Journal" title="From the practice."/><div className="mx-auto grid max-w-6xl gap-8 px-6 py-20 md:grid-cols-2">{c.blog.map(p=><Link key={p.slug} to="/clinic/$slug/blog/$articleSlug" params={{slug:c.slug,articleSlug:p.slug}} className="border-b pb-8">{p.featured_image&&<img src={p.featured_image} alt="" loading="lazy" className="aspect-video w-full object-cover"/>}<h2 className="mt-5 font-display text-2xl">{p.title}</h2><p className="mt-2 text-sm text-neutral-500">{p.author}{p.date&&` · ${p.date}`}</p></Link>)}</div></>}
