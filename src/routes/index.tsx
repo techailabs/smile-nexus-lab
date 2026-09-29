@@ -15,6 +15,8 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:title", content: "TechAI Labs — Dental OS" },
       { property: "og:description", content: "One rendering engine. Infinite clinic experiences." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Landing,

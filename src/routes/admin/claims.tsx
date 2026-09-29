@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin/claims")({
+  head: () => ({ meta: [{title:"Claims | Smile Nexus Lab"},{name:"description",content:"Review clinic website claims."},{property:"og:title",content:"Claims | Smile Nexus Lab"},{property:"og:description",content:"Review clinic website claims."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary"}] }),
   component: AdminClaims,
 });
 

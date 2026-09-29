@@ -4,6 +4,7 @@ import { Building2, Inbox, Star, TrendingUp, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin/")({
+  head: () => ({ meta: [{title:"Overview | Smile Nexus Lab"},{name:"description",content:"Clinic operations overview."},{property:"og:title",content:"Overview | Smile Nexus Lab"},{property:"og:description",content:"Clinic operations overview."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary"}] }),
   component: AdminOverview,
 });
 

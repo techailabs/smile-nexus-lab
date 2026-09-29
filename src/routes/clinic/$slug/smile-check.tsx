@@ -1,12 +1,14 @@
+import { clinicPageHead } from "@/lib/clinic-depth";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Sparkles, CheckCircle2, Loader2 } from "lucide-react";
-import { PageHeader, useClinic, IMG } from "@/components/clinic/site";
+import { PageHeader, useClinic } from "@/components/clinic/site";
 import { svcTitle } from "@/lib/clinic-types";
 import { submitSmileCheck } from "@/lib/smile-check.functions";
 
 export const Route = createFileRoute("/clinic/$slug/smile-check")({
+  head: ({params}) => clinicPageHead(params.slug, "Smile enquiry", `Share smile goals with the practice at ${params.slug.replaceAll("-"," ")}.`),
   component: SmileCheckPage,
 });
 
@@ -78,9 +80,9 @@ function SmileCheckPage() {
       <>
         <PageHeader
           eyebrow="Your smile assessment"
-          title="A personalized plan, just for you."
-          intro={`Thank you ${form.full_name.split(" ")[0]} — here's what we'd suggest based on what you told us.`}
-          image={IMG.smile}
+          title="Your smile enquiry."
+          intro={`Thank you ${form.full_name.split(" ")[0]}. The practice can discuss your options with you.`}
+          
         />
         <section className="border-t border-black/[0.05]">
           <div className="mx-auto max-w-3xl px-6 py-20 lg:px-10">
@@ -103,7 +105,7 @@ function SmileCheckPage() {
                 </div>
               )}
               <p className="mt-10 text-sm text-neutral-500">
-                We've sent your details to the {clinic.clinic_name} team. Expect a follow-up within one business day.
+                Your request was submitted. Contact the practice directly to discuss next steps; no appointment is confirmed.
               </p>
             </div>
           </div>
@@ -115,10 +117,10 @@ function SmileCheckPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Free AI smile assessment"
+        eyebrow="Smile enquiry"
         title="Tell us about your smile."
-        intro={`Answer a few quick questions and our team — supported by AI — will craft a personalized recommendation tailored to ${clinic.clinic_name}'s treatments.`}
-        image={IMG.smile}
+        intro={`Share your goals with ${clinic.clinic_name}. Your details are not sent to the chat assistant; a clinician must assess any treatment needs.`}
+        
       />
       <section className="border-t border-black/[0.05]">
         <div className="mx-auto max-w-2xl px-6 py-20 lg:px-10">
@@ -222,10 +224,10 @@ function SmileCheckPage() {
                     className="mt-2 w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-black/40"
                   />
                 </label>
-                {error && <p className="text-sm text-red-600">{error}</p>}
-                <p className="pt-1 text-xs text-neutral-500">
-                  Treatments at {clinic.clinic_name}: {clinic.services.slice(0, 4).map(svcTitle).join(" · ")}
-                </p>
+                 {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+                 {!!clinic.services?.length && <p className="pt-1 text-xs text-neutral-500">
+                   Treatments listed by {clinic.clinic_name}: {clinic.services.slice(0, 4).map(svcTitle).join(" · ")}. A clinician can advise on suitability.
+                 </p>}
                 <div className="flex items-center justify-between pt-2">
                   <button type="button" onClick={() => setStep(2)} className="text-sm text-neutral-500 hover:text-neutral-900">← Back</button>
                   <button
@@ -235,7 +237,7 @@ function SmileCheckPage() {
                     className="inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium text-white shadow-sm transition disabled:opacity-60"
                     style={{ background: "var(--clinic-primary)" }}
                   >
-                    {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Analyzing…</> : <><Sparkles className="h-4 w-4" /> Get my smile plan</>}
+                    {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Submitting…</> : <><Sparkles className="h-4 w-4" /> Submit smile enquiry</>}
                   </button>
                 </div>
               </div>

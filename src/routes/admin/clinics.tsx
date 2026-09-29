@@ -2,16 +2,21 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Plus, ExternalLink, Search, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { clinicHealth } from "@/lib/clinic-health";
+import type { Clinic } from "@/lib/clinic-types";
+import { Button } from "@/components/ui/button";
 import { slugify, THEME_PRESETS } from "@/lib/clinic-types";
 
 export const Route = createFileRoute("/admin/clinics")({
+  head: () => ({ meta: [{title:"Clinics | Smile Nexus Lab"},{name:"description",content:"Manage dental clinic websites."},{property:"og:title",content:"Clinics | Smile Nexus Lab"},{property:"og:description",content:"Manage dental clinic websites."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary"}] }),
   component: AdminClinics,
 });
 
-type Row = { id: string; clinic_name: string; slug: string; city: string; country: string; theme: string; claimed: boolean; rating: number };
+type Row = Clinic;
 
 function AdminClinics() {
   const [rows, setRows] = useState<Row[]>([]);
+  const [page, setPage] = useState(0);
   const [q, setQ] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -20,14 +25,14 @@ function AdminClinics() {
     setLoading(true);
     const { data } = await supabase
       .from("clinics")
-      .select("id,clinic_name,slug,city,country,theme,claimed,rating")
+      .select("*")
       .order("created_at", { ascending: false })
-      .limit(200);
-    setRows((data as Row[]) ?? []);
+      .range(page*50,(page+1)*50-1);
+    setRows((data as unknown as Row[]) ?? []);
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [page]);
 
   const remove = async (id: string) => {
     if (!confirm("Delete this clinic?")) return;
@@ -44,9 +49,9 @@ function AdminClinics() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground">Database</p>
           <h1 className="mt-2 font-display text-4xl tracking-tight">Clinics</h1>
         </div>
-        <button onClick={() => setAddOpen(true)} className="inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background">
+        <Button onClick={() => setAddOpen(true)} className="inline-flex items-center gap-2">
           <Plus className="h-4 w-4" /> Add clinic
-        </button>
+        </Button>
       </div>
 
       <div className="flex items-center gap-2 rounded-xl border border-border/70 bg-surface px-3 py-2 text-sm">
@@ -61,7 +66,7 @@ function AdminClinics() {
               <th className="px-4 py-3 text-left">Name</th>
               <th className="px-4 py-3 text-left">City</th>
               <th className="px-4 py-3 text-left">Theme</th>
-              <th className="px-4 py-3 text-left">Rating</th>
+              <th className="px-4 py-3 text-left">Site health</th>
               <th className="px-4 py-3 text-left">Status</th>
               <th />
             </tr>
@@ -78,7 +83,7 @@ function AdminClinics() {
                 <td className="px-4 py-3 font-medium">{r.clinic_name}</td>
                 <td className="px-4 py-3 text-muted-foreground">{r.city}, {r.country}</td>
                 <td className="px-4 py-3 text-muted-foreground">{r.theme}</td>
-                <td className="px-4 py-3">★ {Number(r.rating).toFixed(1)}</td>
+                <td className="px-4 py-3"><span title={clinicHealth(r).missing.join(", ") || "All checks complete"}>{clinicHealth(r).score}%</span><p className="max-w-52 text-xs text-muted-foreground">{clinicHealth(r).missing.slice(0,2).join(" · ")}</p></td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs ${r.claimed ? "bg-[oklch(0.7_0.17_150)]/15 text-[oklch(0.85_0.13_150)]" : "bg-muted text-muted-foreground"}`}>
                     {r.claimed ? "Claimed" : "Demo"}
@@ -96,6 +101,7 @@ function AdminClinics() {
         </table>
       </div>
 
+      <div className="flex items-center justify-end gap-3 text-sm"><Button variant="outline" disabled={!page} onClick={() => setPage(p => p-1)}>Previous</Button><span>Page {page+1}</span><Button variant="outline" disabled={rows.length<50} onClick={() => setPage(p => p+1)}>Next</Button></div>
       {addOpen && <AddClinicModal onClose={() => setAddOpen(false)} onSaved={() => { setAddOpen(false); load(); }} />}
     </div>
   );

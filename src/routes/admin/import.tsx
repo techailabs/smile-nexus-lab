@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { slugify, THEME_PRESETS, TEMPLATE_REGISTRY, templatePreset } from "@/lib/clinic-types";
 
 export const Route = createFileRoute("/admin/import")({
+  head: () => ({ meta: [{title:"CSV import | Smile Nexus Lab"},{name:"description",content:"Import dental clinic records."},{property:"og:title",content:"CSV import | Smile Nexus Lab"},{property:"og:description",content:"Import dental clinic records."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary"}] }),
   component: AdminImport,
 });
 

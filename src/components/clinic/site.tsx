@@ -80,11 +80,11 @@ export function SiteNav() {
             </p>
           </div>
         </Link>
-        <nav className="hidden items-center gap-6 whitespace-nowrap text-[13.5px] lg:flex">
+        <nav className="hidden items-center gap-4 whitespace-nowrap text-[13px] xl:flex">
           {nav.map((n) => (
             <Link
               key={n.label}
-              to={n.to}
+              to={n.to as "/clinic/$slug"}
               params={{ slug }}
               activeOptions={{ exact: true }}
               activeProps={{ className: "text-neutral-900" }}
@@ -96,9 +96,9 @@ export function SiteNav() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <a href={`tel:${clinic.phone}`} className="hidden whitespace-nowrap text-sm text-neutral-600 hover:text-neutral-900 xl:inline">
+          {clinic.phone && <a href={`tel:${clinic.phone}`} className="hidden whitespace-nowrap text-sm text-neutral-600 hover:text-neutral-900 xl:inline">
             {clinic.phone}
-          </a>
+          </a>}
           <Link
             to="/clinic/$slug/contact"
             params={{ slug }}
@@ -143,7 +143,7 @@ export function SiteFooter({ onClaim }: { onClaim: () => void }) {
             {nav.slice(1).map((n) => (
               <li key={n.label}>
                 <Link
-                  to={n.to}
+                  to={n.to as "/clinic/$slug"}
                   params={{ slug }}
                   className="text-neutral-700 transition hover:text-neutral-950"
                 >
@@ -168,12 +168,7 @@ export function SiteFooter({ onClaim }: { onClaim: () => void }) {
           <div className="flex items-center gap-4">
             <span>Privacy</span>
             <span>Accessibility</span>
-            <button
-              onClick={onClaim}
-              className="text-neutral-400 transition hover:text-neutral-700"
-            >
-              Manage this site
-            </button>
+            <Button variant="ghost" size="sm" onClick={onClaim}>Manage this site</Button>
           </div>
         </div>
       </div>
@@ -186,7 +181,7 @@ export function SiteFooter({ onClaim }: { onClaim: () => void }) {
 export function PageHeader({ eyebrow, title, intro, image }: { eyebrow: string; title: string; intro?: string; image?: string }) {
   return (
     <section className="relative overflow-hidden border-b border-black/[0.05]">
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:px-10 lg:py-32">
+      <div className={`mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:px-10 ${image ? "lg:grid-cols-[1.1fr_1fr] lg:py-24" : "lg:py-20"}`}>
         <div>
           <p className="text-[11px] uppercase tracking-[0.22em]" style={{ color: "var(--clinic-primary)" }}>{eyebrow}</p>
           <h1 className="mt-5 font-display text-5xl leading-[1.04] tracking-tight md:text-6xl">{title}</h1>
@@ -206,57 +201,17 @@ export function PageHeader({ eyebrow, title, intro, image }: { eyebrow: string; 
 export function HomeHero() {
   const clinic = useClinic();
   const { slug } = useParams({ from: "/clinic/$slug" });
-  const mood = useClinicMood();
 
-  // Mood-aware copy & framing so each clinic feels distinct
-  const moodCopy: Record<string, { eyebrow: string; headline: React.ReactNode; sub: string; cta: string }> = {
-    minimal: {
-      eyebrow: `Dentistry in ${clinic.city}`,
-      headline: <>Modern dentistry, <span className="italic" style={{ color: "var(--clinic-primary)" }}>quietly delivered</span>.</>,
-      sub: `${clinic.clinic_name} pairs evidence-based care with a calm, design-led patient experience.`,
-      cta: "Book a consultation",
-    },
-    luxury: {
-      eyebrow: `Cosmetic dentistry · ${clinic.city}`,
-      headline: <>A signature smile, <span className="italic" style={{ color: "var(--clinic-primary)" }}>crafted for you</span>.</>,
-      sub: `Bespoke veneers, alignment and whitening — designed and delivered by ${clinic.clinic_name}.`,
-      cta: "Begin your consultation",
-    },
-    warm: {
-      eyebrow: `Family dentistry · ${clinic.city}`,
-      headline: <>Trusted dental care, <span className="italic" style={{ color: "var(--clinic-primary)" }}>for every age</span>.</>,
-      sub: `${clinic.clinic_name} is the welcoming dental home families in ${clinic.city} have relied on for years.`,
-      cta: "Schedule a visit",
-    },
-    trust: {
-      eyebrow: `Established dental practice · ${clinic.city}`,
-      headline: <>Considered care from <span className="italic" style={{ color: "var(--clinic-primary)" }}>experienced clinicians</span>.</>,
-      sub: `${clinic.clinic_name} delivers preventive, restorative and cosmetic dentistry to the highest professional standard.`,
-      cta: "Request an appointment",
-    },
-    bold: {
-      eyebrow: `${clinic.city} dental specialists`,
-      headline: <>Confident smiles. <span className="italic" style={{ color: "var(--clinic-primary)" }}>Lasting results.</span></>,
-      sub: `Advanced dental treatments at ${clinic.clinic_name} — designed to deliver outcomes you can see and feel.`,
-      cta: "Book a consultation",
-    },
-  };
-  const copy = moodCopy[mood] ?? moodCopy.minimal;
+  const copy = { eyebrow: `Dental practice · ${clinic.city}`, cta: 'Request a visit' };
 
   const heroImage = clinic.hero_image;
 
   return (
     <section className="relative isolate overflow-hidden bg-white">
-      {/* Subtle, tinted background — replaces the busy photo wash */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.55]"
-        style={{
-          background: `radial-gradient(60% 50% at 85% 0%, color-mix(in oklab, var(--clinic-primary) 14%, transparent) 0%, transparent 60%), radial-gradient(50% 40% at 0% 100%, color-mix(in oklab, var(--clinic-secondary) 10%, transparent) 0%, transparent 60%)`,
-        }}
-      />
+
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[1px] bg-gradient-to-r from-transparent via-black/10 to-transparent" />
 
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 md:py-28 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:px-10 lg:py-32">
+      <div className={`mx-auto grid max-w-7xl gap-12 px-6 py-16 md:py-20 lg:gap-20 lg:px-10 ${heroImage ? "lg:grid-cols-[1.1fr_1fr]" : ""}`}>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
           <span className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-neutral-600">
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--clinic-primary)" }} />
@@ -398,7 +353,7 @@ export function GalleryStrip() {
   const clinic = useClinic();
   const imgs = clinic.gallery_images || [];
   if (!imgs.length) return null;
-  return <section className="border-t border-black/[0.05] bg-[oklch(0.98_0.003_250)]"><div className="mx-auto max-w-7xl px-6 py-24 lg:px-10"><h2 className="font-display text-4xl">A look inside {clinic.clinic_name}.</h2><div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3">{imgs.map((src,i) => <img key={src} src={src} alt={`${clinic.clinic_name} gallery image ${i+1}`} loading="lazy" className="aspect-[4/3] w-full object-cover" />)}</div></div></section>;
+  return <section className="border-t border-black/[0.05] bg-[oklch(0.98_0.003_250)]"><div className="mx-auto max-w-7xl px-6 py-24 lg:px-10"><h2 className="font-display text-4xl">Images for {clinic.clinic_name}.</h2><div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3">{imgs.map((src,i) => <img key={src} src={src} alt={`Gallery image ${i+1}`} loading="lazy" className="aspect-[4/3] w-full object-cover" />)}</div></div></section>;
 }
 
 export function TestimonialLarge() {
@@ -499,7 +454,7 @@ export function WhatsAppFab() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`Chat with ${clinic.clinic_name} on WhatsApp`}
-      className="fixed bottom-20 left-4 z-40 md:bottom-6 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3.5 text-sm font-medium text-white shadow-[0_15px_40px_-10px_rgba(37,211,102,0.6)] transition hover:scale-105"
+      className="fixed bottom-20 left-4 z-40 hidden md:bottom-6 md:inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3.5 text-sm font-medium text-white shadow-[0_15px_40px_-10px_rgba(37,211,102,0.6)] transition hover:scale-105"
     >
       <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden="true">
         <path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 0 1 8.413 3.488 11.82 11.82 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.607zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.149-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/>

@@ -1,0 +1,5 @@
+import { createFileRoute, notFound } from '@tanstack/react-router';
+import { PageHeader, FinalCta, useClinic } from '@/components/clinic/site';
+import { clinicPageHead } from '@/lib/clinic-depth';
+export const Route=createFileRoute('/clinic/$slug/locations')({head:({params})=>clinicPageHead(params.slug,'Locations',`Visit ${params.slug.replaceAll('-',' ')}.`),component:Locations});
+function Locations(){const c=useClinic();if(!c.locations?.length)throw notFound();return <><PageHeader eyebrow="Locations" title="Find a practice."/><div className="mx-auto grid max-w-5xl gap-8 px-6 py-20 sm:grid-cols-2">{c.locations.map(l=><article key={l.name} className="border-b pb-8"><h2 className="font-display text-2xl">{l.name}</h2><p className="mt-3">{l.address}{l.city&&`, ${l.city}`}</p>{l.phone&&<a href={`tel:${l.phone}`} className="mt-3 block underline">{l.phone}</a>}<a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.address)}`} target="_blank" rel="noopener noreferrer" className="mt-4 block underline">Get directions</a></article>)}</div><FinalCta/></>}
