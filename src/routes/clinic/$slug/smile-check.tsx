@@ -224,10 +224,10 @@ function SmileCheckPage() {
                     className="mt-2 w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-black/40"
                   />
                 </label>
-                {error && <p className="text-sm text-red-600">{error}</p>}
-                <p className="pt-1 text-xs text-neutral-500">
-                  Treatments at {clinic.clinic_name}: {clinic.services.slice(0, 4).map(svcTitle).join(" · ")}
-                </p>
+                 {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+                 {!!clinic.services?.length && <p className="pt-1 text-xs text-neutral-500">
+                   Treatments listed by {clinic.clinic_name}: {clinic.services.slice(0, 4).map(svcTitle).join(" · ")}. A clinician can advise on suitability.
+                 </p>}
                 <div className="flex items-center justify-between pt-2">
                   <button type="button" onClick={() => setStep(2)} className="text-sm text-neutral-500 hover:text-neutral-900">← Back</button>
                   <button
