@@ -1,92 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { PageHeader, HoursCard, MapSection, useClinic, IMG } from "@/components/clinic/site";
-import { MapPin, Phone, Mail, CheckCircle2 } from "lucide-react";
-
-export const Route = createFileRoute("/clinic/$slug/contact")({
-  component: ContactPage,
-});
-
-function ContactPage() {
-  const clinic = useClinic();
-  const [done, setDone] = useState(false);
-  return (
-    <>
-      <PageHeader
-        eyebrow="Book a visit"
-        title={`Let's get you in.`}
-        intro={`Tell us a little about what you're looking for, and we'll find a quiet time that works.`}
-        image={IMG.family}
-      />
-      <section className="border-t border-black/[0.05]">
-        <div className="mx-auto grid max-w-7xl gap-14 px-6 py-20 lg:grid-cols-[1.2fr_1fr] lg:px-10">
-          <div className="rounded-[1.75rem] border border-black/[0.06] bg-white p-8 md:p-10">
-            {done ? (
-              <div className="py-10 text-center">
-                <CheckCircle2 className="mx-auto h-10 w-10" style={{ color: "var(--clinic-primary)" }} />
-                <p className="mt-6 font-display text-3xl tracking-tight">We'll be in touch soon.</p>
-                <p className="mt-3 text-neutral-600">Thanks for reaching out to {clinic.clinic_name}.</p>
-              </div>
-            ) : (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setDone(true);
-                }}
-                className="space-y-5"
-              >
-                <p className="font-display text-3xl tracking-tight">Request an appointment</p>
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <Field label="Full name" name="name" required />
-                  <Field label="Phone" name="phone" type="tel" required />
-                </div>
-                <Field label="Email" name="email" type="email" required />
-                <Field label="What can we help with?" name="topic" placeholder="e.g. check-up, whitening, Invisalign" />
-                <label className="block">
-                  <span className="text-[12px] uppercase tracking-[0.18em] text-neutral-500">Anything else?</span>
-                  <textarea
-                    className="mt-2 w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-black/40"
-                    rows={4}
-                  />
-                </label>
-                <button
-                  className="inline-flex items-center justify-center rounded-full px-7 py-3.5 text-sm font-medium text-white shadow-sm transition hover:opacity-95"
-                  style={{ background: "var(--clinic-primary)" }}
-                >
-                  Request appointment
-                </button>
-              </form>
-            )}
-          </div>
-          <div className="space-y-6">
-            <div className="rounded-[1.5rem] border border-black/[0.06] bg-white p-8">
-              <p className="font-display text-2xl tracking-tight">Visit us</p>
-              <ul className="mt-6 space-y-4 text-sm text-neutral-700">
-                {clinic.address && <li className="flex items-start gap-3"><MapPin className="mt-0.5 h-4 w-4" /> {clinic.address}</li>}
-                {clinic.phone && <li className="flex items-center gap-3"><Phone className="h-4 w-4" /> <a href={`tel:${clinic.phone}`}>{clinic.phone}</a></li>}
-                {clinic.email && <li className="flex items-center gap-3"><Mail className="h-4 w-4" /> <a href={`mailto:${clinic.email}`}>{clinic.email}</a></li>}
-              </ul>
-            </div>
-            <HoursCard />
-          </div>
-        </div>
-      </section>
-      <MapSection />
-    </>
-  );
-}
-
-function Field({ label, name, type = "text", required, placeholder }: { label: string; name: string; type?: string; required?: boolean; placeholder?: string }) {
-  return (
-    <label className="block">
-      <span className="text-[12px] uppercase tracking-[0.18em] text-neutral-500">{label}{required ? " *" : ""}</span>
-      <input
-        name={name}
-        type={type}
-        required={required}
-        placeholder={placeholder}
-        className="mt-2 w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-black/40"
-      />
-    </label>
-  );
-}
+import { createFileRoute } from '@tanstack/react-router';
+import { useState, type FormEvent } from 'react';
+import { PageHeader, HoursCard, MapSection, useClinic } from '@/components/clinic/site';
+import { supabase } from '@/integrations/supabase/client';
+import { trackClinicEvent } from '@/lib/clinic-events';
+import { clinicPageHead } from '@/lib/clinic-depth';
+import { Button } from '@/components/ui/button';
+import { CheckCircle2, Mail, MapPin, Phone } from 'lucide-react';
+export const Route=createFileRoute('/clinic/$slug/contact')({head:({params})=>clinicPageHead(params.slug,'Contact & appointments',`Contact ${params.slug.replaceAll('-',' ')} or request a visit.`),component:Contact});
+function Contact(){const c=useClinic();const [done,setDone]=useState(false);const [busy,setBusy]=useState(false);const [error,setError]=useState('');async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();const form=new FormData(e.currentTarget);setBusy(true);setError('');const {error:insertError}=await supabase.from('clinic_appointment_requests').insert({clinic_id:c.id,patient_name:String(form.get('name')||'').trim(),email:String(form.get('email')||'').trim(),phone:String(form.get('phone')||'').trim(),patient_type:String(form.get('patient_type')||''),reason:String(form.get('reason')||''),preferred_date:String(form.get('date')||'')||null,preferred_time:String(form.get('time')||'')});setBusy(false);if(insertError){setError('Your request could not be sent. Please call the practice.');return;}trackClinicEvent(c.id,'appointment_requested');setDone(true)}return <><PageHeader eyebrow="Contact" title={`Visit ${c.clinic_name}.`} intro="Request a visit below. The practice will contact you to confirm availability."/><section className="border-t"><div className="mx-auto grid max-w-7xl gap-14 px-6 py-20 lg:grid-cols-[1.2fr_1fr] lg:px-10"><div>{done?<div role="status" className="py-16"><CheckCircle2 className="size-9"/><h2 className="mt-5 font-display text-3xl">Appointment request submitted.</h2><p className="mt-3 text-neutral-600">This is not a confirmed booking. {c.clinic_name} will contact you to discuss your visit.</p></div>:<form onSubmit={submit} onFocus={()=>trackClinicEvent(c.id,'appointment_started')} className="space-y-5"><h2 className="font-display text-3xl">Request an appointment</h2><p className="text-sm text-neutral-500">Please don't include sensitive health information in this form.</p><label className="block text-sm">Patient type<select name="patient_type" required className="mt-2 w-full rounded-md border p-3"><option value="new">New patient</option><option value="existing">Existing patient</option></select></label><label className="block text-sm">Reason for visit<input name="reason" required maxLength={200} placeholder="General check-up, consultation…" className="mt-2 w-full rounded-md border p-3"/></label><div className="grid gap-4 sm:grid-cols-2"><label className="block text-sm">Preferred date<input name="date" type="date" required min={new Date().toISOString().slice(0,10)} className="mt-2 w-full rounded-md border p-3"/></label><label className="block text-sm">Preferred time<input name="time" placeholder="Morning, afternoon…" maxLength={60} className="mt-2 w-full rounded-md border p-3"/></label></div><div className="grid gap-4 sm:grid-cols-2"><label className="block text-sm">Full name<input name="name" required maxLength={120} className="mt-2 w-full rounded-md border p-3"/></label><label className="block text-sm">Phone<input name="phone" type="tel" required maxLength={40} className="mt-2 w-full rounded-md border p-3"/></label></div><label className="block text-sm">Email<input name="email" type="email" required maxLength={200} className="mt-2 w-full rounded-md border p-3"/></label>{error&&<p role="alert" className="text-sm text-red-700">{error}</p>}<Button disabled={busy} type="submit" className="px-6">{busy?'Sending…':'Submit request'}</Button></form>}</div><div className="space-y-6"><div className="space-y-4 border-b pb-8"><h2 className="font-display text-2xl">Visit us</h2>{c.address&&<p className="flex gap-3"><MapPin className="size-4 shrink-0"/>{c.address}</p>}{c.phone&&<a className="flex gap-3" href={`tel:${c.phone}`}><Phone className="size-4"/>{c.phone}</a>}{c.email&&<a className="flex gap-3" href={`mailto:${c.email}`}><Mail className="size-4"/>{c.email}</a>}</div><HoursCard/></div></div></section><MapSection/></>}

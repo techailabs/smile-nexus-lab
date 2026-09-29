@@ -1,23 +1,26 @@
 import { createFileRoute, notFound, Outlet } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getPublicClinic } from "@/lib/clinic.functions";
+import { trackClinicEvent } from "@/lib/clinic-events";
+import { Button } from "@/components/ui/button";
+import { Phone, CalendarDays, MessageCircle } from "lucide-react";
 import type { Clinic } from "@/lib/clinic-types";
 import { templatePreset, verticalMeta } from "@/lib/clinic-types";
 import { ClinicProvider, SiteNav, SiteFooter, WhatsAppFab, ClinicSEO } from "@/components/clinic/site";
 import { CustomizerPanel, type ClinicTheme } from "@/components/clinic/CustomizerPanel";
 import { ClaimModal } from "@/components/clinic/ClaimModal";
+const ClinicAssistant = lazy(() => import("@/components/clinic/ClinicAssistant"));
 
 export const Route = createFileRoute("/clinic/$slug")({
-  head: ({ params }) => {
-    const name = formatSlug(params.slug);
-    return {
-      meta: [
-        { title: `${name} — Book online` },
-        { name: "description", content: `${name} — modern, trusted local services. Book online, view services, reviews and contact.` },
-        { property: "og:title", content: name },
-        { property: "og:description", content: `${name} — book online today.` },
-      ],
-    };
+  loader: async ({ params, context }) => context.queryClient.ensureQueryData({ queryKey: ['clinic', params.slug], queryFn: () => getPublicClinic({ data: params.slug }), staleTime: 60000 }),
+  head: ({ loaderData, params }) => {
+    const clinic = loaderData as Clinic | null;
+    const name = clinic?.clinic_name || formatSlug(params.slug);
+    const description = clinic?.meta_description || clinic?.short_description || `${name}, dental practice in ${clinic?.city || 'your area'}. Explore services and contact information.`;
+    const title = clinic?.meta_title || `${name} | Dentist in ${clinic?.city || 'your area'}`;
+    const image = clinic?.og_image || clinic?.hero_image;
+    return { meta: [{ title }, { name: 'description', content: description }, { property: 'og:title', content: title }, { property: 'og:description', content: description }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }, ...(image?.startsWith('https://') ? [{ property: 'og:image', content: image }, { name: 'twitter:image', content: image }] : [])], links: clinic?.canonical_url?.startsWith('https://') ? [{ rel: 'canonical', href: clinic.canonical_url }] : [] };
   },
   component: ClinicLayout,
   notFoundComponent: () => (
@@ -52,9 +55,8 @@ function deviceMaxWidth(d: ClinicTheme["device"]) {
 
 function ClinicLayout() {
   const { slug } = Route.useParams();
-  const [clinic, setClinic] = useState<Clinic | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [missing, setMissing] = useState(false);
+  const { data } = useSuspenseQuery({ queryKey: ['clinic', slug], queryFn: () => getPublicClinic({ data: slug }), staleTime: 60000 });
+  const clinic = data as Clinic | null;
   const [claimOpen, setClaimOpen] = useState(false);
   const [theme, setTheme] = useState<ClinicTheme>({
     primary: "#0b6cf2",
@@ -65,35 +67,9 @@ function ClinicLayout() {
     device: "desktop",
   });
 
-  useEffect(() => {
-    supabase
-      .from("clinics")
-      .select("*")
-      .eq("slug", slug)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (!data) {
-          setMissing(true);
-        } else {
-          const c = data as unknown as Clinic;
-          setClinic(c);
-          const preset = templatePreset(c.template_key);
-          setTheme((t) => ({
-            ...t,
-            primary: c.primary_color || preset.primary,
-            secondary: c.secondary_color || preset.secondary,
-            vibe: c.template_key || c.theme,
-          }));
-        }
-        setLoading(false);
-      });
-  }, [slug]);
-
-  if (loading) {
-    return <div className="grid min-h-screen place-items-center bg-white text-sm text-neutral-500">Loading…</div>;
-  }
-  if (missing || !clinic) throw notFound();
-
+  useEffect(() => { if (clinic) trackClinicEvent(clinic.id, 'preview_viewed'); }, [clinic?.id]);
+  if (!clinic) throw notFound();
+  const preset = templatePreset(clinic.template_key);
   const maxW = deviceMaxWidth(theme.device);
 
   return (
@@ -107,12 +83,7 @@ function ClinicLayout() {
             <span className="text-white/30">·</span>
             <span className="truncate">Prepared for <span className="text-white">{clinic.clinic_name}</span> — claim to deploy on your own domain.</span>
           </div>
-          <button
-            onClick={() => setClaimOpen(true)}
-            className="rounded-full bg-white px-3 py-1 text-[11px] font-medium text-neutral-900 transition hover:bg-white/90"
-          >
-            Claim this site
-          </button>
+          <div className="flex items-center gap-3"><Button variant="ghost" size="sm" className="text-white" onClick={() => setClaimOpen(true)}>Request changes</Button><Button size="sm" className="bg-white text-neutral-900" onClick={() => { trackClinicEvent(clinic.id,'claim_clicked'); setClaimOpen(true); }}>Claim this website</Button></div>
         </div>
       </div>
 
@@ -121,8 +92,8 @@ function ClinicLayout() {
         style={
           {
             maxWidth: maxW,
-            "--clinic-primary": theme.primary,
-            "--clinic-secondary": theme.secondary,
+            "--clinic-primary": theme.vibe === 'modern-minimal' ? (clinic.primary_color || preset.primary) : theme.primary,
+            "--clinic-secondary": theme.vibe === 'modern-minimal' ? (clinic.secondary_color || preset.secondary) : theme.secondary,
             "--clinic-radius": `${theme.radius}rem`,
           } as React.CSSProperties
         }
@@ -135,6 +106,8 @@ function ClinicLayout() {
           </main>
           <SiteFooter onClaim={() => setClaimOpen(true)} />
           <WhatsAppFab />
+          <Suspense fallback={null}><ClinicAssistant /></Suspense>
+          <div className="fixed bottom-0 inset-x-0 z-40 flex h-16 items-center justify-around border-t border-border bg-background text-foreground md:hidden">{clinic.phone && <a href={`tel:${clinic.phone}`} className="flex flex-col items-center text-xs"><Phone className="size-5" />Call</a>}<a href={`/clinic/${clinic.slug}/contact`} className="flex flex-col items-center text-xs"><CalendarDays className="size-5" />Book</a><span className="flex flex-col items-center text-xs"><MessageCircle className="size-5" />AI</span></div>
         </ClinicProvider>
       </div>
 
