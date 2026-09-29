@@ -20,14 +20,21 @@ import { Route as AdminImportRouteImport } from './routes/admin/import'
 import { Route as AdminClinicsRouteImport } from './routes/admin/clinics'
 import { Route as AdminClaimsRouteImport } from './routes/admin/claims'
 import { Route as ClinicSlugIndexRouteImport } from './routes/clinic/$slug/index'
+import { Route as ClinicSlugTechnologyRouteImport } from './routes/clinic/$slug/technology'
+import { Route as ClinicSlugTeamRouteImport } from './routes/clinic/$slug/team'
 import { Route as ClinicSlugSmileCheckRouteImport } from './routes/clinic/$slug/smile-check'
 import { Route as ClinicSlugServicesRouteImport } from './routes/clinic/$slug/services'
 import { Route as ClinicSlugReviewsRouteImport } from './routes/clinic/$slug/reviews'
+import { Route as ClinicSlugPatientInfoRouteImport } from './routes/clinic/$slug/patient-info'
+import { Route as ClinicSlugOffersRouteImport } from './routes/clinic/$slug/offers'
+import { Route as ClinicSlugLocationsRouteImport } from './routes/clinic/$slug/locations'
 import { Route as ClinicSlugGalleryRouteImport } from './routes/clinic/$slug/gallery'
 import { Route as ClinicSlugFaqRouteImport } from './routes/clinic/$slug/faq'
 import { Route as ClinicSlugContactRouteImport } from './routes/clinic/$slug/contact'
+import { Route as ClinicSlugBlogRouteImport } from './routes/clinic/$slug/blog'
 import { Route as ClinicSlugAboutRouteImport } from './routes/clinic/$slug/about'
 import { Route as ClinicSlugServicesServiceSlugRouteImport } from './routes/clinic/$slug/services.$serviceSlug'
+import { Route as ClinicSlugBlogArticleSlugRouteImport } from './routes/clinic/$slug/blog/$articleSlug'
 
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
@@ -84,6 +91,16 @@ const ClinicSlugIndexRoute = ClinicSlugIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ClinicSlugRoute,
 } as any)
+const ClinicSlugTechnologyRoute = ClinicSlugTechnologyRouteImport.update({
+  id: '/technology',
+  path: '/technology',
+  getParentRoute: () => ClinicSlugRoute,
+} as any)
+const ClinicSlugTeamRoute = ClinicSlugTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => ClinicSlugRoute,
+} as any)
 const ClinicSlugSmileCheckRoute = ClinicSlugSmileCheckRouteImport.update({
   id: '/smile-check',
   path: '/smile-check',
@@ -97,6 +114,21 @@ const ClinicSlugServicesRoute = ClinicSlugServicesRouteImport.update({
 const ClinicSlugReviewsRoute = ClinicSlugReviewsRouteImport.update({
   id: '/reviews',
   path: '/reviews',
+  getParentRoute: () => ClinicSlugRoute,
+} as any)
+const ClinicSlugPatientInfoRoute = ClinicSlugPatientInfoRouteImport.update({
+  id: '/patient-info',
+  path: '/patient-info',
+  getParentRoute: () => ClinicSlugRoute,
+} as any)
+const ClinicSlugOffersRoute = ClinicSlugOffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => ClinicSlugRoute,
+} as any)
+const ClinicSlugLocationsRoute = ClinicSlugLocationsRouteImport.update({
+  id: '/locations',
+  path: '/locations',
   getParentRoute: () => ClinicSlugRoute,
 } as any)
 const ClinicSlugGalleryRoute = ClinicSlugGalleryRouteImport.update({
@@ -114,6 +146,11 @@ const ClinicSlugContactRoute = ClinicSlugContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => ClinicSlugRoute,
 } as any)
+const ClinicSlugBlogRoute = ClinicSlugBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => ClinicSlugRoute,
+} as any)
 const ClinicSlugAboutRoute = ClinicSlugAboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -124,6 +161,12 @@ const ClinicSlugServicesServiceSlugRoute =
     id: '/$serviceSlug',
     path: '/$serviceSlug',
     getParentRoute: () => ClinicSlugServicesRoute,
+  } as any)
+const ClinicSlugBlogArticleSlugRoute =
+  ClinicSlugBlogArticleSlugRouteImport.update({
+    id: '/$articleSlug',
+    path: '/$articleSlug',
+    getParentRoute: () => ClinicSlugBlogRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -138,13 +181,20 @@ export interface FileRoutesByFullPath {
   '/clinic/$slug': typeof ClinicSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/clinic/$slug/about': typeof ClinicSlugAboutRoute
+  '/clinic/$slug/blog': typeof ClinicSlugBlogRouteWithChildren
   '/clinic/$slug/contact': typeof ClinicSlugContactRoute
   '/clinic/$slug/faq': typeof ClinicSlugFaqRoute
   '/clinic/$slug/gallery': typeof ClinicSlugGalleryRoute
+  '/clinic/$slug/locations': typeof ClinicSlugLocationsRoute
+  '/clinic/$slug/offers': typeof ClinicSlugOffersRoute
+  '/clinic/$slug/patient-info': typeof ClinicSlugPatientInfoRoute
   '/clinic/$slug/reviews': typeof ClinicSlugReviewsRoute
   '/clinic/$slug/services': typeof ClinicSlugServicesRouteWithChildren
   '/clinic/$slug/smile-check': typeof ClinicSlugSmileCheckRoute
+  '/clinic/$slug/team': typeof ClinicSlugTeamRoute
+  '/clinic/$slug/technology': typeof ClinicSlugTechnologyRoute
   '/clinic/$slug/': typeof ClinicSlugIndexRoute
+  '/clinic/$slug/blog/$articleSlug': typeof ClinicSlugBlogArticleSlugRoute
   '/clinic/$slug/services/$serviceSlug': typeof ClinicSlugServicesServiceSlugRoute
 }
 export interface FileRoutesByTo {
@@ -157,13 +207,20 @@ export interface FileRoutesByTo {
   '/api/clinic-chat': typeof ApiClinicChatRoute
   '/admin': typeof AdminIndexRoute
   '/clinic/$slug/about': typeof ClinicSlugAboutRoute
+  '/clinic/$slug/blog': typeof ClinicSlugBlogRouteWithChildren
   '/clinic/$slug/contact': typeof ClinicSlugContactRoute
   '/clinic/$slug/faq': typeof ClinicSlugFaqRoute
   '/clinic/$slug/gallery': typeof ClinicSlugGalleryRoute
+  '/clinic/$slug/locations': typeof ClinicSlugLocationsRoute
+  '/clinic/$slug/offers': typeof ClinicSlugOffersRoute
+  '/clinic/$slug/patient-info': typeof ClinicSlugPatientInfoRoute
   '/clinic/$slug/reviews': typeof ClinicSlugReviewsRoute
   '/clinic/$slug/services': typeof ClinicSlugServicesRouteWithChildren
   '/clinic/$slug/smile-check': typeof ClinicSlugSmileCheckRoute
+  '/clinic/$slug/team': typeof ClinicSlugTeamRoute
+  '/clinic/$slug/technology': typeof ClinicSlugTechnologyRoute
   '/clinic/$slug': typeof ClinicSlugIndexRoute
+  '/clinic/$slug/blog/$articleSlug': typeof ClinicSlugBlogArticleSlugRoute
   '/clinic/$slug/services/$serviceSlug': typeof ClinicSlugServicesServiceSlugRoute
 }
 export interface FileRoutesById {
@@ -179,13 +236,20 @@ export interface FileRoutesById {
   '/clinic/$slug': typeof ClinicSlugRouteWithChildren
   '/admin/': typeof AdminIndexRoute
   '/clinic/$slug/about': typeof ClinicSlugAboutRoute
+  '/clinic/$slug/blog': typeof ClinicSlugBlogRouteWithChildren
   '/clinic/$slug/contact': typeof ClinicSlugContactRoute
   '/clinic/$slug/faq': typeof ClinicSlugFaqRoute
   '/clinic/$slug/gallery': typeof ClinicSlugGalleryRoute
+  '/clinic/$slug/locations': typeof ClinicSlugLocationsRoute
+  '/clinic/$slug/offers': typeof ClinicSlugOffersRoute
+  '/clinic/$slug/patient-info': typeof ClinicSlugPatientInfoRoute
   '/clinic/$slug/reviews': typeof ClinicSlugReviewsRoute
   '/clinic/$slug/services': typeof ClinicSlugServicesRouteWithChildren
   '/clinic/$slug/smile-check': typeof ClinicSlugSmileCheckRoute
+  '/clinic/$slug/team': typeof ClinicSlugTeamRoute
+  '/clinic/$slug/technology': typeof ClinicSlugTechnologyRoute
   '/clinic/$slug/': typeof ClinicSlugIndexRoute
+  '/clinic/$slug/blog/$articleSlug': typeof ClinicSlugBlogArticleSlugRoute
   '/clinic/$slug/services/$serviceSlug': typeof ClinicSlugServicesServiceSlugRoute
 }
 export interface FileRouteTypes {
@@ -202,13 +266,20 @@ export interface FileRouteTypes {
     | '/clinic/$slug'
     | '/admin/'
     | '/clinic/$slug/about'
+    | '/clinic/$slug/blog'
     | '/clinic/$slug/contact'
     | '/clinic/$slug/faq'
     | '/clinic/$slug/gallery'
+    | '/clinic/$slug/locations'
+    | '/clinic/$slug/offers'
+    | '/clinic/$slug/patient-info'
     | '/clinic/$slug/reviews'
     | '/clinic/$slug/services'
     | '/clinic/$slug/smile-check'
+    | '/clinic/$slug/team'
+    | '/clinic/$slug/technology'
     | '/clinic/$slug/'
+    | '/clinic/$slug/blog/$articleSlug'
     | '/clinic/$slug/services/$serviceSlug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -221,13 +292,20 @@ export interface FileRouteTypes {
     | '/api/clinic-chat'
     | '/admin'
     | '/clinic/$slug/about'
+    | '/clinic/$slug/blog'
     | '/clinic/$slug/contact'
     | '/clinic/$slug/faq'
     | '/clinic/$slug/gallery'
+    | '/clinic/$slug/locations'
+    | '/clinic/$slug/offers'
+    | '/clinic/$slug/patient-info'
     | '/clinic/$slug/reviews'
     | '/clinic/$slug/services'
     | '/clinic/$slug/smile-check'
+    | '/clinic/$slug/team'
+    | '/clinic/$slug/technology'
     | '/clinic/$slug'
+    | '/clinic/$slug/blog/$articleSlug'
     | '/clinic/$slug/services/$serviceSlug'
   id:
     | '__root__'
@@ -242,13 +320,20 @@ export interface FileRouteTypes {
     | '/clinic/$slug'
     | '/admin/'
     | '/clinic/$slug/about'
+    | '/clinic/$slug/blog'
     | '/clinic/$slug/contact'
     | '/clinic/$slug/faq'
     | '/clinic/$slug/gallery'
+    | '/clinic/$slug/locations'
+    | '/clinic/$slug/offers'
+    | '/clinic/$slug/patient-info'
     | '/clinic/$slug/reviews'
     | '/clinic/$slug/services'
     | '/clinic/$slug/smile-check'
+    | '/clinic/$slug/team'
+    | '/clinic/$slug/technology'
     | '/clinic/$slug/'
+    | '/clinic/$slug/blog/$articleSlug'
     | '/clinic/$slug/services/$serviceSlug'
   fileRoutesById: FileRoutesById
 }
@@ -339,6 +424,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClinicSlugIndexRouteImport
       parentRoute: typeof ClinicSlugRoute
     }
+    '/clinic/$slug/technology': {
+      id: '/clinic/$slug/technology'
+      path: '/technology'
+      fullPath: '/clinic/$slug/technology'
+      preLoaderRoute: typeof ClinicSlugTechnologyRouteImport
+      parentRoute: typeof ClinicSlugRoute
+    }
+    '/clinic/$slug/team': {
+      id: '/clinic/$slug/team'
+      path: '/team'
+      fullPath: '/clinic/$slug/team'
+      preLoaderRoute: typeof ClinicSlugTeamRouteImport
+      parentRoute: typeof ClinicSlugRoute
+    }
     '/clinic/$slug/smile-check': {
       id: '/clinic/$slug/smile-check'
       path: '/smile-check'
@@ -358,6 +457,27 @@ declare module '@tanstack/react-router' {
       path: '/reviews'
       fullPath: '/clinic/$slug/reviews'
       preLoaderRoute: typeof ClinicSlugReviewsRouteImport
+      parentRoute: typeof ClinicSlugRoute
+    }
+    '/clinic/$slug/patient-info': {
+      id: '/clinic/$slug/patient-info'
+      path: '/patient-info'
+      fullPath: '/clinic/$slug/patient-info'
+      preLoaderRoute: typeof ClinicSlugPatientInfoRouteImport
+      parentRoute: typeof ClinicSlugRoute
+    }
+    '/clinic/$slug/offers': {
+      id: '/clinic/$slug/offers'
+      path: '/offers'
+      fullPath: '/clinic/$slug/offers'
+      preLoaderRoute: typeof ClinicSlugOffersRouteImport
+      parentRoute: typeof ClinicSlugRoute
+    }
+    '/clinic/$slug/locations': {
+      id: '/clinic/$slug/locations'
+      path: '/locations'
+      fullPath: '/clinic/$slug/locations'
+      preLoaderRoute: typeof ClinicSlugLocationsRouteImport
       parentRoute: typeof ClinicSlugRoute
     }
     '/clinic/$slug/gallery': {
@@ -381,6 +501,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClinicSlugContactRouteImport
       parentRoute: typeof ClinicSlugRoute
     }
+    '/clinic/$slug/blog': {
+      id: '/clinic/$slug/blog'
+      path: '/blog'
+      fullPath: '/clinic/$slug/blog'
+      preLoaderRoute: typeof ClinicSlugBlogRouteImport
+      parentRoute: typeof ClinicSlugRoute
+    }
     '/clinic/$slug/about': {
       id: '/clinic/$slug/about'
       path: '/about'
@@ -394,6 +521,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/clinic/$slug/services/$serviceSlug'
       preLoaderRoute: typeof ClinicSlugServicesServiceSlugRouteImport
       parentRoute: typeof ClinicSlugServicesRoute
+    }
+    '/clinic/$slug/blog/$articleSlug': {
+      id: '/clinic/$slug/blog/$articleSlug'
+      path: '/$articleSlug'
+      fullPath: '/clinic/$slug/blog/$articleSlug'
+      preLoaderRoute: typeof ClinicSlugBlogArticleSlugRouteImport
+      parentRoute: typeof ClinicSlugBlogRoute
     }
   }
 }
@@ -416,6 +550,18 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface ClinicSlugBlogRouteChildren {
+  ClinicSlugBlogArticleSlugRoute: typeof ClinicSlugBlogArticleSlugRoute
+}
+
+const ClinicSlugBlogRouteChildren: ClinicSlugBlogRouteChildren = {
+  ClinicSlugBlogArticleSlugRoute: ClinicSlugBlogArticleSlugRoute,
+}
+
+const ClinicSlugBlogRouteWithChildren = ClinicSlugBlogRoute._addFileChildren(
+  ClinicSlugBlogRouteChildren,
+)
+
 interface ClinicSlugServicesRouteChildren {
   ClinicSlugServicesServiceSlugRoute: typeof ClinicSlugServicesServiceSlugRoute
 }
@@ -429,23 +575,35 @@ const ClinicSlugServicesRouteWithChildren =
 
 interface ClinicSlugRouteChildren {
   ClinicSlugAboutRoute: typeof ClinicSlugAboutRoute
+  ClinicSlugBlogRoute: typeof ClinicSlugBlogRouteWithChildren
   ClinicSlugContactRoute: typeof ClinicSlugContactRoute
   ClinicSlugFaqRoute: typeof ClinicSlugFaqRoute
   ClinicSlugGalleryRoute: typeof ClinicSlugGalleryRoute
+  ClinicSlugLocationsRoute: typeof ClinicSlugLocationsRoute
+  ClinicSlugOffersRoute: typeof ClinicSlugOffersRoute
+  ClinicSlugPatientInfoRoute: typeof ClinicSlugPatientInfoRoute
   ClinicSlugReviewsRoute: typeof ClinicSlugReviewsRoute
   ClinicSlugServicesRoute: typeof ClinicSlugServicesRouteWithChildren
   ClinicSlugSmileCheckRoute: typeof ClinicSlugSmileCheckRoute
+  ClinicSlugTeamRoute: typeof ClinicSlugTeamRoute
+  ClinicSlugTechnologyRoute: typeof ClinicSlugTechnologyRoute
   ClinicSlugIndexRoute: typeof ClinicSlugIndexRoute
 }
 
 const ClinicSlugRouteChildren: ClinicSlugRouteChildren = {
   ClinicSlugAboutRoute: ClinicSlugAboutRoute,
+  ClinicSlugBlogRoute: ClinicSlugBlogRouteWithChildren,
   ClinicSlugContactRoute: ClinicSlugContactRoute,
   ClinicSlugFaqRoute: ClinicSlugFaqRoute,
   ClinicSlugGalleryRoute: ClinicSlugGalleryRoute,
+  ClinicSlugLocationsRoute: ClinicSlugLocationsRoute,
+  ClinicSlugOffersRoute: ClinicSlugOffersRoute,
+  ClinicSlugPatientInfoRoute: ClinicSlugPatientInfoRoute,
   ClinicSlugReviewsRoute: ClinicSlugReviewsRoute,
   ClinicSlugServicesRoute: ClinicSlugServicesRouteWithChildren,
   ClinicSlugSmileCheckRoute: ClinicSlugSmileCheckRoute,
+  ClinicSlugTeamRoute: ClinicSlugTeamRoute,
+  ClinicSlugTechnologyRoute: ClinicSlugTechnologyRoute,
   ClinicSlugIndexRoute: ClinicSlugIndexRoute,
 }
 
