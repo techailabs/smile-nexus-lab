@@ -181,7 +181,7 @@ export function SiteFooter({ onClaim }: { onClaim: () => void }) {
 export function PageHeader({ eyebrow, title, intro, image }: { eyebrow: string; title: string; intro?: string; image?: string }) {
   return (
     <section className="relative overflow-hidden border-b border-black/[0.05]">
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-24 lg:grid-cols-[1.1fr_1fr] lg:px-10 lg:py-32">
+      <div className={`mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:px-10 ${image ? "lg:grid-cols-[1.1fr_1fr] lg:py-24" : "lg:py-20"}`}>
         <div>
           <p className="text-[11px] uppercase tracking-[0.22em]" style={{ color: "var(--clinic-primary)" }}>{eyebrow}</p>
           <h1 className="mt-5 font-display text-5xl leading-[1.04] tracking-tight md:text-6xl">{title}</h1>
@@ -208,16 +208,10 @@ export function HomeHero() {
 
   return (
     <section className="relative isolate overflow-hidden bg-white">
-      {/* Subtle, tinted background — replaces the busy photo wash */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.55]"
-        style={{
-          background: `radial-gradient(60% 50% at 85% 0%, color-mix(in oklab, var(--clinic-primary) 14%, transparent) 0%, transparent 60%), radial-gradient(50% 40% at 0% 100%, color-mix(in oklab, var(--clinic-secondary) 10%, transparent) 0%, transparent 60%)`,
-        }}
-      />
+
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[1px] bg-gradient-to-r from-transparent via-black/10 to-transparent" />
 
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:py-20 lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:px-10">
+      <div className={`mx-auto grid max-w-7xl gap-12 px-6 py-16 md:py-20 lg:gap-20 lg:px-10 ${heroImage ? "lg:grid-cols-[1.1fr_1fr]" : ""}`}>
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
           <span className="inline-flex items-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-neutral-600">
             <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--clinic-primary)" }} />
