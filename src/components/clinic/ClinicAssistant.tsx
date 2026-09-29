@@ -19,10 +19,11 @@ export default function ClinicAssistant() {
     transport: new DefaultChatTransport({ api: '/api/clinic-chat', body: { slug: clinic.slug } }),
   });
   useEffect(() => { if (open) input.current?.focus(); }, [open, status]);
+  useEffect(() => { const onOpen = () => setOpen(true); window.addEventListener('clinic-assistant-open', onOpen); return () => window.removeEventListener('clinic-assistant-open', onOpen); }, []);
   const busy = status === 'submitted' || status === 'streaming';
   const ask = (text: string) => { if (!busy && text.trim()) sendMessage({ text: text.trim() }); };
   return <>
-    {!open && <Button title="Ask the practice assistant" aria-label="Open practice assistant" onClick={() => setOpen(true)} className="fixed bottom-20 right-4 z-50 h-12 gap-2 rounded-full bg-primary px-4 text-primary-foreground shadow-lg md:bottom-6 md:right-6"><MessageCircle className="size-5" /> <span className="hidden sm:inline">Ask {clinic.clinic_name}</span></Button>}
+    {!open && <Button title="Ask the practice assistant" aria-label="Open practice assistant" onClick={() => setOpen(true)} className="fixed bottom-20 right-4 z-50 hidden h-12 md:inline-flex gap-2 rounded-full bg-primary px-4 text-primary-foreground shadow-lg md:bottom-6 md:right-6"><MessageCircle className="size-5" /> <span className="hidden sm:inline">Ask {clinic.clinic_name}</span></Button>}
     {open && <div role="dialog" aria-label={`${clinic.clinic_name} assistant`} className="fixed inset-0 z-50 flex flex-col bg-background text-foreground shadow-2xl md:inset-auto md:bottom-6 md:right-6 md:h-[min(680px,85vh)] md:w-[410px] md:rounded-lg md:border md:border-border">
       <header className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3"><div><p className="font-display text-base font-semibold">{clinic.clinic_name}</p><p className="text-xs text-muted-foreground">Practice assistant · General information only</p></div><div className="flex gap-1"><Button size="icon" variant="ghost" title="New conversation" aria-label="New conversation" onClick={() => setMessages([])}><RotateCcw /></Button><Button size="icon" variant="ghost" title="Close assistant" aria-label="Close assistant" onClick={() => setOpen(false)}><X /></Button></div></header>
       <Conversation className="min-h-0 flex-1"><ConversationContent className="gap-4 px-5 py-5">

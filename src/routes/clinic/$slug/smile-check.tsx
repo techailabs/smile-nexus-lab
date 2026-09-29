@@ -78,8 +78,8 @@ function SmileCheckPage() {
       <>
         <PageHeader
           eyebrow="Your smile assessment"
-          title="A personalized plan, just for you."
-          intro={`Thank you ${form.full_name.split(" ")[0]} — here's what we'd suggest based on what you told us.`}
+          title="Your smile enquiry."
+          intro={`Thank you ${form.full_name.split(" ")[0]}. The practice can discuss your options with you.`}
           
         />
         <section className="border-t border-black/[0.05]">
@@ -103,7 +103,7 @@ function SmileCheckPage() {
                 </div>
               )}
               <p className="mt-10 text-sm text-neutral-500">
-                We've sent your details to the {clinic.clinic_name} team. Expect a follow-up within one business day.
+                Your request was submitted. Contact the practice directly to discuss next steps; no appointment is confirmed.
               </p>
             </div>
           </div>
@@ -115,9 +115,9 @@ function SmileCheckPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Free AI smile assessment"
+        eyebrow="Smile enquiry"
         title="Tell us about your smile."
-        intro={`Answer a few quick questions and our team — supported by AI — will craft a personalized recommendation tailored to ${clinic.clinic_name}'s treatments.`}
+        intro={`Share your goals with ${clinic.clinic_name}. Your details are not sent to the chat assistant; a clinician must assess any treatment needs.`}
         
       />
       <section className="border-t border-black/[0.05]">
@@ -235,7 +235,7 @@ function SmileCheckPage() {
                     className="inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-medium text-white shadow-sm transition disabled:opacity-60"
                     style={{ background: "var(--clinic-primary)" }}
                   >
-                    {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Analyzing…</> : <><Sparkles className="h-4 w-4" /> Get my smile plan</>}
+                    {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Submitting…</> : <><Sparkles className="h-4 w-4" /> Submit smile enquiry</>}
                   </button>
                 </div>
               </div>

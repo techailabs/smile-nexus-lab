@@ -6,7 +6,7 @@ import { trackClinicEvent } from "@/lib/clinic-events";
 import { Button } from "@/components/ui/button";
 import { Phone, CalendarDays, MessageCircle } from "lucide-react";
 import type { Clinic } from "@/lib/clinic-types";
-import { templatePreset, verticalMeta } from "@/lib/clinic-types";
+import { templatePreset } from "@/lib/clinic-types";
 import { ClinicProvider, SiteNav, SiteFooter, WhatsAppFab, ClinicSEO } from "@/components/clinic/site";
 import { CustomizerPanel, type ClinicTheme } from "@/components/clinic/CustomizerPanel";
 import { ClaimModal } from "@/components/clinic/ClaimModal";
@@ -73,7 +73,7 @@ function ClinicLayout() {
   const maxW = deviceMaxWidth(theme.device);
 
   return (
-    <div className="min-h-screen bg-neutral-100">
+    <div className="min-h-screen overflow-x-clip bg-neutral-100">
       {/* Preview framing — this is a private demo prepared for the clinic to review */}
       <div className="relative z-40 border-b border-black/[0.08] bg-neutral-950 text-white">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-6 py-2 text-[11.5px] lg:px-10">
@@ -81,7 +81,7 @@ function ClinicLayout() {
             <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
             <span className="uppercase tracking-[0.2em] text-white/60">Private preview</span>
             <span className="text-white/30">·</span>
-            <span className="truncate">Prepared for <span className="text-white">{clinic.clinic_name}</span> — claim to deploy on your own domain.</span>
+            <span className="min-w-0 break-words">Prepared for <span className="text-white">{clinic.clinic_name}</span> — claim to deploy on your own domain.</span>
           </div>
           <div className="flex items-center gap-3"><Button variant="ghost" size="sm" className="text-white" onClick={() => setClaimOpen(true)}>Request changes</Button><Button size="sm" className="bg-white text-neutral-900" onClick={() => { trackClinicEvent(clinic.id,'claim_clicked'); setClaimOpen(true); }}>Claim this website</Button></div>
         </div>
@@ -107,7 +107,7 @@ function ClinicLayout() {
           <SiteFooter onClaim={() => setClaimOpen(true)} />
           <WhatsAppFab />
           <Suspense fallback={null}><ClinicAssistant /></Suspense>
-          <div className="fixed bottom-0 inset-x-0 z-40 flex h-16 items-center justify-around border-t border-border bg-background text-foreground md:hidden">{clinic.phone && <a href={`tel:${clinic.phone}`} className="flex flex-col items-center text-xs"><Phone className="size-5" />Call</a>}<a href={`/clinic/${clinic.slug}/contact`} className="flex flex-col items-center text-xs"><CalendarDays className="size-5" />Book</a><span className="flex flex-col items-center text-xs"><MessageCircle className="size-5" />AI</span></div>
+          <div className="fixed bottom-0 inset-x-0 z-40 flex h-16 items-center justify-around border-t border-border bg-background text-foreground md:hidden">{clinic.phone && <a href={`tel:${clinic.phone}`} className="flex flex-col items-center text-xs"><Phone className="size-5" />Call</a>}<Button variant="ghost" asChild className="flex h-14 flex-col items-center gap-0.5 text-xs"><a href={`/clinic/${clinic.slug}/contact`}><CalendarDays className="size-5" />Book</a></Button><Button variant="ghost" aria-label="Open practice assistant" onClick={() => window.dispatchEvent(new Event("clinic-assistant-open"))} className="flex h-14 flex-col items-center gap-0.5 text-xs"><MessageCircle className="size-5" />AI</Button></div>
         </ClinicProvider>
       </div>
 
